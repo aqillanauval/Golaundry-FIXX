@@ -1,0 +1,10 @@
+# Di folder upload, file .php tidak boleh dijalankan (jaga-jaga kalau ada yang lolos)
+<FilesMatch "\.(php|phtml|phar)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
