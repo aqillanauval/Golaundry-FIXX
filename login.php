@@ -1,128 +1,83 @@
 <?php
+// ============================================================
+// profile.php  -  Profil pengguna (admin & customer)
+// Pengguna bisa mengubah nama dan password.
+// ============================================================
 require_once 'includes/config.php';
+wajibLogin();
+
+$username = $_SESSION['user'];
+$users = loadUsers();
+
+if (!isset($users[$username])) {
+    redirect('logout.php');
+}
 
 $error = '';
-$usernameIsi = isset($_COOKIE['ingat_user']) ? $_COOKIE['ingat_user'] : '';
-$ingatCentang = isset($_COOKIE['ingat_user']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = normalUser($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $ingat = isset($_POST['ingat']);
+    $namaBaru = bersihkan($_POST['nama'] ?? '');
+    $passwordBaru = $_POST['password_baru'] ?? '';
 
-    $usernameIsi = $username;
-    $ingatCentang = $ingat;
-
-        if ($username === '' || $password === '') {
-        $error = 'Email/No. HP dan password wajib diisi ya.';
+    if ($namaBaru === '') {
+        $error = 'Nama tidak boleh kosong.';
+    } elseif ($passwordBaru !== '' && strlen($passwordBaru) < 6) {
+        $error = 'Password baru minimal 6 karakter.';
     } else {
-        $akun = cariUser($username);
-
-        if ($akun !== false && password_verify($password, $akun['password'])) {
-            session_regenerate_id(true);
-            $_SESSION['user'] = $akun['username'];
-            $_SESSION['nama'] = $akun['nama'];
-            $_SESSION['role'] = $akun['role'];
-
-            if (password_needs_rehash($akun['password'], PASSWORD_DEFAULT)) {
-                simpanHashPassword($akun['username'], $password);
-            }
-
-            if ($ingat) {
-                setcookie('ingat_user', $username, time() + (60 * 60 * 24 * 30), '/');
-            } else {
-                setcookie('ingat_user', '', time() - 3600, '/');
-            }
-
-            redirect(urlDashboard($_SESSION['role']));
-        } else {
-            $error = 'Email/No. HP atau password salah.';
+        $users[$username]['nama'] = $namaBaru;
+        if ($passwordBaru !== '') {
+            $users[$username]['password'] = password_hash($passwordBaru, PASSWORD_DEFAULT);
         }
+        saveUsers($users);
+        $_SESSION['nama'] = $namaBaru; // perbarui data di session juga
+        setFlash('sukses', 'Profil berhasil diperbarui.');
+        redirect('profile.php');
     }
 }
+
+$namaTampil = ($error !== '') ? ($_POST['nama'] ?? '') : $users[$username]['nama'];
+$namaRole = ($users[$username]['role'] === 'admin') ? 'Admin / Staff' : 'Pelanggan';
+
+$judulHalaman = 'Profil Saya';
+$subJudul = 'Kelola data diri akunmu.';
+require 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Masuk - GOLaundry</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="assets/img/logo.png">
-  <link rel="stylesheet" href="assets/css/auth.css">
-  <script src="https://kit.fontawesome.com/b7c9988b7a.js" crossorigin="anonymous"></script>
-</head>
-<body class="auth-body">
 
-  <div class="auth-card">
-
-    <!-- Sisi kiri: gambar. Taruh gambarmu di assets/img/login-banner.png -->
-    <div class="auth-visual">
-      <div class="visual-cadangan">
-        <?= logoSvg(64) ?>
-        <h2>GOLaundry</h2>
-        <p>Laundry lebih mudah,<br>hidup lebih nyaman</p>
-      </div>
-      <img src="assets/img/login-banner.png" alt="GOLaundry Laundry Management" class="visual-gambar" data-gambar-banner>
-    </div>
-
-    <!-- Sisi kanan: form -->
-    <div class="auth-form">
-      <div class="brand-mobile"><?= logoSvg(40) ?> <strong>GOLaundry</strong></div>
-
-      <h1>Selamat Datang!</h1>
-      <p class="sub">Masuk ke akun Anda untuk mengakses layanan laundry.</p>
-
-      <?= tampilFlash() ?>
-      <?php if ($error !== ''): ?>
-        <div class="alert alert-error"><?= e($error) ?></div>
-      <?php endif; ?>
-
-      <form method="post" action="login.php" id="formLogin" novalidate>
-
-        <div class="input-group">
-          <span class="ikon-kiri"><?= ikon('mail', 20) ?></span>
-          <input type="text" name="username" id="username" placeholder="Email atau No. HP"
-                 value="<?= e($usernameIsi) ?>" autocomplete="username">
-        </div>
-
-        <div class="input-group">
-          <span class="ikon-kiri"><?= ikon('lock', 20) ?></span>
-          <input type="password" name="password" id="password" placeholder="Password"
-                 autocomplete="current-password">
-          <button type="button" class="ikon-kanan" data-toggle-password="password" aria-label="Lihat password">
-            <span class="ikon-mata"><?= ikon('eyeoff', 20) ?></span>
-            <span class="ikon-mata-buka" hidden><?= ikon('eye', 20) ?></span>
-          </button>
-        </div>
-
-        <p class="error-text" id="errorForm"></p>
-
-        <div class="baris-antara">
-          <label class="centang">
-            <input type="checkbox" name="ingat" <?= $ingatCentang ? 'checked' : '' ?>>
-            <span>Ingat saya</span>
-          </label>
-          <a href="#" data-belum-tersedia>Lupa password?</a>
-        </div>
-
-        <button type="submit" class="btn-utama">Masuk <?= ikon('arrow', 20) ?></button>
-      </form>
-
-      <div class="pemisah"><span>atau</span></div>
-
-      <button type="button" class="btn-google" data-belum-tersedia>
-        <i class="fa-brands fa-google ikon-google" aria-hidden="true"></i>
-        Masuk dengan Google
-      </button>
-
-      <p class="pindah-halaman">Belum punya akun? <a href="register.php">Daftar di sini</a></p>
+<section class="card profil-card">
+  <div class="profil-atas">
+    <div class="avatar besar"><?= e(inisial($users[$username]['nama'])) ?></div>
+    <div>
+      <h3><?= e($users[$username]['nama']) ?></h3>
+      <p class="muted"><?= e($username) ?> &middot; <?= e($namaRole) ?></p>
     </div>
   </div>
 
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/auth.js"></script>
-</body>
-</html>
+  <?php if ($error !== ''): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>
+
+  <form method="post" action="profile.php" class="form">
+    <div class="field">
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" name="nama" value="<?= e($namaTampil) ?>" required>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Email / No. HP</label>
+        <input type="text" value="<?= e($username) ?>" disabled>
+      </div>
+      <div class="field">
+        <label>Peran</label>
+        <input type="text" value="<?= e($namaRole) ?>" disabled>
+      </div>
+    </div>
+    <div class="field">
+      <label for="password_baru">Password baru</label>
+      <input type="password" id="password_baru" name="password_baru" placeholder="Kosongkan jika tidak ingin mengganti" autocomplete="new-password">
+      <small class="bantuan">Minimal 6 karakter.</small>
+    </div>
+    <div class="form-aksi">
+      <button type="submit" class="btn btn-primary">Simpan perubahan</button>
+    </div>
+  </form>
+</section>
+
+<?php require 'includes/footer.php'; ?>
