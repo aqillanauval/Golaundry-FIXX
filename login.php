@@ -1,12 +1,4 @@
 <?php
-// ============================================================
-// login.php  (HTML + PHP jadi satu)
-// STATE yang dipakai:
-//   - SESSION : menyimpan status login ($_SESSION['user'], 'nama', 'role')
-//   - COOKIE  : 'ingat_user' (fitur "Ingat saya", berlaku 30 hari)
-// Role (admin / customer) otomatis dibaca dari data akun, jadi
-// tidak perlu dipilih lagi di form.
-// ============================================================
 require_once 'includes/config.php';
 
 $error = '';
@@ -21,29 +13,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usernameIsi = $username;
     $ingatCentang = $ingat;
 
-    if ($username === '' || $password === '') {
+        if ($username === '' || $password === '') {
         $error = 'Email/No. HP dan password wajib diisi ya.';
     } else {
-        $users = loadUsers();
+        $akun = cariUser($username);
 
-        if (isset($users[$username]) && cekPassword($password, $users[$username]['password'])) {
-            // login berhasil -> simpan statusnya di SESSION
-            session_regenerate_id(true); // ganti ID session biar lebih aman
-            $_SESSION['user'] = $username;
-            $_SESSION['nama'] = $users[$username]['nama'];
-            $_SESSION['role'] = $users[$username]['role'];
+        if ($akun !== false && password_verify($password, $akun['password'])) {
+            session_regenerate_id(true);
+            $_SESSION['user'] = $akun['username'];
+            $_SESSION['nama'] = $akun['nama'];
+            $_SESSION['role'] = $akun['role'];
 
-            // akun lama masih berisi password polos -> ubah jadi hash
-            if (substr($users[$username]['password'], 0, 4) !== '$2y$') {
-                $users[$username]['password'] = password_hash($password, PASSWORD_DEFAULT);
-                saveUsers($users);
+            if (password_needs_rehash($akun['password'], PASSWORD_DEFAULT)) {
+                simpanHashPassword($akun['username'], $password);
             }
 
-            // "Ingat saya" -> simpan username di COOKIE selama 30 hari
             if ($ingat) {
                 setcookie('ingat_user', $username, time() + (60 * 60 * 24 * 30), '/');
             } else {
-                setcookie('ingat_user', '', time() - 3600, '/'); // hapus cookie
+                setcookie('ingat_user', '', time() - 3600, '/');
             }
 
             redirect(urlDashboard($_SESSION['role']));

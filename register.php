@@ -1,10 +1,5 @@
 <?php
-// ============================================================
-// register.php  (HTML + PHP jadi satu)
-// Akun baru otomatis berperan sebagai "customer".
-// Validasi dilakukan 2 kali: di browser (auth.js) dan di server (di bawah ini).
-// Validasi di server WAJIB, karena validasi di browser bisa dilewati.
-// ============================================================
+
 require_once 'includes/config.php';
 
 $error = '';
@@ -19,9 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isi['nama'] = $nama;
     $isi['username'] = $username;
 
-    $users = loadUsers();
-
-    if ($nama === '' || $username === '' || $password === '' || $ulangi === '') {
+        if ($nama === '' || $username === '' || $password === '' || $ulangi === '') {
         $error = 'Semua kolom wajib diisi ya.';
     } elseif (!usernameValid($username)) {
         $error = 'Isi dengan email yang valid atau nomor HP (9-15 angka).';
@@ -29,17 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Password minimal 6 karakter.';
     } elseif ($password !== $ulangi) {
         $error = 'Ulangi password belum sama.';
-    } elseif (isset($users[$username])) {
+    } elseif (cariUser($username) !== false) {
+        $error = 'Email/No. HP ini sudah terdaftar.';
+    } elseif (!tambahUser($username, $password, $nama, 'customer')) {
         $error = 'Email/No. HP ini sudah terdaftar.';
     } else {
-        // simpan akun baru, password di-hash supaya tidak terbaca polos di file
-        $users[$username] = [
-            'password' => password_hash($password, PASSWORD_DEFAULT),
-            'nama' => $nama,
-            'role' => 'customer',
-        ];
-        saveUsers($users);
-
         setFlash('sukses', 'Akun berhasil dibuat! Silakan masuk.');
         redirect('login.php');
     }

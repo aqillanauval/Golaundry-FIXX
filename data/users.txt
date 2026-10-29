@@ -1,2 +1,3 @@
 admin@golaundry.com,$2y$10$kY0zgEuUWb4Ri9j6azBMGeMgbgtftaUuBgH.RMidDhPIJQP7F21FC,Admin GoLaundry,admin
 pelanggan@golaundry.com,$2y$10$HDaIgTjjtijdiiELNQv4JeaWq8154K/6PuTmv.FTwHPwKFxyp2JdC,Pelanggan 1,customer
+aqillanauval26@gmail.com,$2y$10$3dwyEkhjM9Bdss6lAbi1tOowWsfHZSj7ALI/NF2OvB/MCDZmZ1JyG,Aqilla Nauvall,customer

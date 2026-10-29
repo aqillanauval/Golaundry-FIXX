@@ -1,15 +1,12 @@
 <?php
-// ============================================================
-// profile.php  -  Profil pengguna (admin & customer)
-// Pengguna bisa mengubah nama dan password.
-// ============================================================
+
 require_once 'includes/config.php';
 wajibLogin();
 
 $username = $_SESSION['user'];
-$users = loadUsers();
+$akun = cariUser($username);
 
-if (!isset($users[$username])) {
+if ($akun === false) {
     redirect('logout.php');
 }
 
@@ -24,19 +21,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($passwordBaru !== '' && strlen($passwordBaru) < 6) {
         $error = 'Password baru minimal 6 karakter.';
     } else {
-        $users[$username]['nama'] = $namaBaru;
-        if ($passwordBaru !== '') {
-            $users[$username]['password'] = password_hash($passwordBaru, PASSWORD_DEFAULT);
-        }
-        saveUsers($users);
-        $_SESSION['nama'] = $namaBaru; // perbarui data di session juga
+        ubahUser($username, $namaBaru, $passwordBaru);
+        $_SESSION['nama'] = $namaBaru;
         setFlash('sukses', 'Profil berhasil diperbarui.');
         redirect('profile.php');
     }
 }
 
-$namaTampil = ($error !== '') ? ($_POST['nama'] ?? '') : $users[$username]['nama'];
-$namaRole = ($users[$username]['role'] === 'admin') ? 'Admin / Staff' : 'Pelanggan';
+$namaTampil = ($error !== '') ? ($_POST['nama'] ?? '') : $akun['nama'];
+$namaRole = ($akun['role'] === 'admin') ? 'Admin / Staff' : 'Pelanggan';
 
 $judulHalaman = 'Profil Saya';
 $subJudul = 'Kelola data diri akunmu.';
@@ -45,9 +38,9 @@ require 'includes/header.php';
 
 <section class="card profil-card">
   <div class="profil-atas">
-    <div class="avatar besar"><?= e(inisial($users[$username]['nama'])) ?></div>
+    <div class="avatar besar"><?= e(inisial($akun['nama'])) ?></div>
     <div>
-      <h3><?= e($users[$username]['nama']) ?></h3>
+      <h3><?= e($akun['nama']) ?></h3>
       <p class="muted"><?= e($username) ?> &middot; <?= e($namaRole) ?></p>
     </div>
   </div>

@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS golaundry CHARACTER SET utf8mb4;
+USE golaundry;
+
+CREATE TABLE IF NOT EXISTS users (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  username   VARCHAR(100) NOT NULL UNIQUE,
+  password   VARCHAR(255) NOT NULL,
+  nama       VARCHAR(100) NOT NULL,
+  role       ENUM('admin','customer') NOT NULL DEFAULT 'customer',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

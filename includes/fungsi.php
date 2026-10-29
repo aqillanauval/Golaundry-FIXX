@@ -158,22 +158,43 @@ function tulisFile($namaFile, $baris)
 
 // ---------- Users ----------
 
+// Data akun disimpan di MySQL (tabel users). Bentuk array-nya sama seperti sebelumnya,
+// jadi halaman lain tidak perlu diubah.
 function loadUsers()
 {
+    global $pdo;
     $users = [];
-    foreach (bacaFile('users.txt', 4) as $k) {
-        $users[$k[0]] = ['password' => $k[1], 'nama' => $k[2], 'role' => $k[3]];
+    foreach ($pdo->query('SELECT username, password, nama, role FROM users ORDER BY id') as $k) {
+        $users[$k['username']] = ['password' => $k['password'], 'nama' => $k['nama'], 'role' => $k['role']];
     }
     return $users;
 }
 
+// menyamakan isi tabel users dengan array $users: tambah/ubah yang ada, hapus yang sudah tidak ada
 function saveUsers($users)
 {
-    $baris = [];
-    foreach ($users as $username => $u) {
-        $baris[] = [$username, $u['password'], $u['nama'], $u['role']];
+    global $pdo;
+    $pdo->beginTransaction();
+    try {
+        $upsert = $pdo->prepare(
+            'INSERT INTO users (username, password, nama, role) VALUES (?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE password = VALUES(password), nama = VALUES(nama), role = VALUES(role)'
+        );
+        foreach ($users as $username => $u) {
+            $upsert->execute([(string)$username, $u['password'], $u['nama'], $u['role']]);
+        }
+        if (count($users) > 0) {
+            $marks = implode(',', array_fill(0, count($users), '?'));
+            $hapus = $pdo->prepare("DELETE FROM users WHERE username NOT IN ($marks)");
+            $hapus->execute(array_map('strval', array_keys($users)));
+        } else {
+            $pdo->exec('DELETE FROM users');
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
     }
-    tulisFile('users.txt', $baris);
 }
 
 // password baru disimpan dalam bentuk hash. Akun lama (belum di-hash) tetap bisa login.
@@ -426,13 +447,22 @@ function siapkanData()
     if (!is_dir(FOLDER_UPLOAD)) {
         mkdir(FOLDER_UPLOAD, 0777, true);
     }
-    foreach (['users', 'layanan', 'karyawan', 'orders', 'ulasan', 'promo'] as $nama) {
+    foreach (['layanan', 'karyawan', 'orders', 'ulasan', 'promo'] as $nama) {
         if (!file_exists(FOLDER_DATA . $nama . '.txt')) {
             file_put_contents(FOLDER_DATA . $nama . '.txt', '');
         }
     }
-    // kalau belum ada akun sama sekali, buat 2 akun contoh (password di-hash)
+    // kalau tabel users masih kosong: impor akun lama dari users.txt (kalau ada),
+    // kalau tidak ada buat 2 akun contoh (password di-hash)
     if (count(loadUsers()) === 0) {
+        $lama = [];
+        foreach (bacaFile('users.txt', 4) as $k) {
+            $lama[$k[0]] = ['password' => $k[1], 'nama' => $k[2], 'role' => $k[3]];
+        }
+        if (count($lama) > 0) {
+            saveUsers($lama);
+            return;
+        }
         saveUsers([
             'admin@golaundry.com' => [
                 'password' => password_hash('admin123', PASSWORD_DEFAULT),

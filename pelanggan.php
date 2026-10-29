@@ -1,8 +1,5 @@
 <?php
-// ============================================================
-// pelanggan.php  -  CRUD Pelanggan (khusus admin)
-// Admin bisa menambah, mengubah nama, dan menghapus akun pelanggan.
-// ============================================================
+
 require_once 'includes/config.php';
 wajibLogin('admin');
 
@@ -11,9 +8,7 @@ $form = ['username' => '', 'nama' => '', 'edit' => false];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $aksi = $_POST['aksi'] ?? '';
-    $users = loadUsers();
 
-    // ----- CREATE & UPDATE -----
     if ($aksi === 'simpan') {
         $form['edit'] = ($_POST['mode'] ?? '') === 'edit';
         $form['username'] = normalUser($_POST['username'] ?? '');
@@ -23,67 +18,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($form['nama'] === '' || $form['username'] === '') {
             $error = 'Nama dan email/No. HP wajib diisi ya.';
         } elseif ($form['edit']) {
-            // UPDATE: ubah nama (dan password kalau diisi)
-            if (!isset($users[$form['username']]) || $users[$form['username']]['role'] !== 'customer') {
+            $akun = cariUser($form['username']);
+            if ($akun === false || $akun['role'] !== 'customer') {
                 $error = 'Pelanggan tidak ditemukan.';
             } elseif ($password !== '' && strlen($password) < 6) {
                 $error = 'Password baru minimal 6 karakter.';
             } else {
-                $users[$form['username']]['nama'] = $form['nama'];
-                if ($password !== '') {
-                    $users[$form['username']]['password'] = password_hash($password, PASSWORD_DEFAULT);
-                }
-                saveUsers($users);
+                ubahUser($form['username'], $form['nama'], $password);
                 setFlash('sukses', 'Data pelanggan berhasil diubah.');
                 redirect('pelanggan.php');
             }
         } else {
-            // CREATE
             if (!usernameValid($form['username'])) {
                 $error = 'Isi dengan email yang valid atau nomor HP (9-15 angka).';
             } elseif (strlen($password) < 6) {
                 $error = 'Password minimal 6 karakter.';
-            } elseif (isset($users[$form['username']])) {
+            } elseif (cariUser($form['username']) !== false
+                      || !tambahUser($form['username'], $password, $form['nama'], 'customer')) {
                 $error = 'Email/No. HP ini sudah terdaftar.';
             } else {
-                $users[$form['username']] = [
-                    'password' => password_hash($password, PASSWORD_DEFAULT),
-                    'nama' => $form['nama'], 'role' => 'customer',
-                ];
-                saveUsers($users);
                 setFlash('sukses', 'Pelanggan baru berhasil ditambahkan.');
                 redirect('pelanggan.php');
             }
         }
     }
 
-    // ----- DELETE (hanya akun customer yang boleh dihapus) -----
     if ($aksi === 'hapus') {
         $username = $_POST['username'] ?? '';
-        if (isset($users[$username]) && $users[$username]['role'] === 'customer') {
-            unset($users[$username]);
-            saveUsers($users);
+        if (is_string($username) && hapusPelanggan($username) > 0) {
             setFlash('sukses', 'Akun pelanggan berhasil dihapus.');
         }
         redirect('pelanggan.php');
     }
 }
 
-// mode edit
 if (isset($_GET['edit']) && $error === '') {
-    $users = loadUsers();
-    $u = $_GET['edit'];
-    if (isset($users[$u]) && $users[$u]['role'] === 'customer') {
-        $form = ['username' => $u, 'nama' => $users[$u]['nama'], 'edit' => true];
+    $u = is_string($_GET['edit']) ? cariUser($_GET['edit']) : false;
+    if ($u !== false && $u['role'] === 'customer') {
+        $form = ['username' => $u['username'], 'nama' => $u['nama'], 'edit' => true];
     }
 }
 
-$daftar = [];
-foreach (loadUsers() as $username => $u) {
-    if ($u['role'] === 'customer') {
-        $daftar[] = ['username' => $username, 'nama' => $u['nama']];
-    }
-}
+$daftar = daftarPelanggan();
 
 $judulHalaman = 'Manajemen Pelanggan';
 $subJudul = 'Kelola akun pelanggan yang terdaftar di GOLaundry.';
