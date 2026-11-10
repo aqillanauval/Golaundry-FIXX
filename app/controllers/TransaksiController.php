@@ -111,10 +111,6 @@ class TransaksiController extends Controller
             }
         }
 
-<<<<<<< HEAD
-=======
-        // data pesanan yang lagi diedit
->>>>>>> 22a935c (update fitur)
         $diedit = null;
         if ($form['id'] != '') {
             $diedit = $this->pesananModel->cariByKode($form['id']);

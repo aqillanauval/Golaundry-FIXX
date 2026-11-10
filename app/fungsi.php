@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> 22a935c (update fitur)
 function e($teks)
 {
     return htmlspecialchars((string)$teks, ENT_QUOTES, 'UTF-8');
@@ -61,10 +57,6 @@ function inisial($nama)
     return mb_strtoupper(mb_substr($nama, 0, 1));
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 22a935c (update fitur)
 function normalUser($username)
 {
     $username = trim($username);
@@ -99,10 +91,6 @@ function tokenCocok($tokenDariForm)
     return is_string($tokenDariForm) && hash_equals(ambilToken(), $tokenDariForm);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 22a935c (update fitur)
 function tampilFlash()
 {
     if (!isset($_SESSION['flash'])) {
@@ -115,10 +103,6 @@ function tampilFlash()
     return '<div class="alert ' . $kelas . '" data-autohide>' . e($flash['pesan']) . '</div>';
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 22a935c (update fitur)
 function statusKelas($status)
 {
     return strtolower(str_replace(' ', '-', $status));
@@ -129,10 +113,6 @@ function badgeStatus($status)
     return '<span class="badge badge-' . e(statusKelas($status)) . '">' . e($status) . '</span>';
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 22a935c (update fitur)
 function promoMasihBerlaku($promo)
 {
     return $promo['berlaku_sampai'] >= date('Y-m-d');
@@ -143,10 +123,6 @@ function adaFotoPromo($promo)
     return $promo['foto'] != '' && file_exists(FOLDER_UPLOAD . $promo['foto']);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 22a935c (update fitur)
 function formHapus($nilai, $pesanKonfirmasi, $teksTombol = 'Hapus')
 {
     return '<form method="post" class="inline" data-konfirmasi="' . e($pesanKonfirmasi) . '">'
