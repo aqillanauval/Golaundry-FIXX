@@ -1,14 +1,9 @@
-// ============================================================
-// auth.js  -  JavaScript khusus halaman login & register
-// Validasi di sini hanya untuk kenyamanan pengguna (cepat, tanpa reload).
-// Validasi yang sebenarnya tetap dilakukan di server (PHP).
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const form = document.getElementById('formLogin') || document.getElementById('formRegister');
   const teksError = document.getElementById('errorForm');
 
-  // 1. Kalau gambar banner belum ada, sembunyikan supaya tampilan cadangan muncul
   const gambar = document.querySelector('[data-gambar-banner]');
   if (gambar) {
     const sembunyikan = function () { gambar.style.display = 'none'; };
@@ -18,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // 2. Tombol / link yang fiturnya belum dibuat (Google & Lupa password)
   const belumTersedia = document.querySelectorAll('[data-belum-tersedia]');
   belumTersedia.forEach(function (el) {
     el.addEventListener('click', function (e) {
@@ -29,13 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!form) return;
 
-  // 3. Validasi sebelum form dikirim
   form.addEventListener('submit', function (e) {
     teksError.textContent = '';
     const pesan = cekForm();
 
     if (pesan !== '') {
-      e.preventDefault(); // jangan kirim ke server
+      e.preventDefault(); 
       teksError.textContent = pesan;
     }
   });
@@ -44,13 +37,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const username = form.querySelector('#username').value.trim();
     const password = form.querySelector('#password').value;
 
-    // halaman login: cukup cek tidak kosong
     if (form.id === 'formLogin') {
       if (username === '' || password === '') return 'Email/No. HP dan password wajib diisi ya.';
       return '';
     }
-
-    // halaman register: cek lebih lengkap
     const nama = form.querySelector('#nama').value.trim();
     const ulangi = form.querySelector('#ulangi').value;
 
@@ -68,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return '';
   }
 
-  // 4. Halaman register: cek "ulangi password" langsung saat mengetik
   const ulangi = form.querySelector('#ulangi');
   if (ulangi) {
     ulangi.addEventListener('input', function () {

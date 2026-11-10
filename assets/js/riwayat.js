@@ -1,7 +1,4 @@
-// ============================================================
-// riwayat.js  -  Kalau form ulasan terbuka, gulir ke sana
-// dan langsung arahkan kursor ke kolom komentar.
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const formUlasan = document.getElementById('formUlasan');
   if (!formUlasan) return;

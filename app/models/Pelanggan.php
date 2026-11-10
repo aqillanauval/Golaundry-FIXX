@@ -1,6 +1,4 @@
 <?php
-// Pelanggan.php  ->  anak dari class Pengguna, buat customer
-
 class Pelanggan extends Pengguna
 {
     protected $role = 'customer';
@@ -15,7 +13,7 @@ class Pelanggan extends Pengguna
         return 'dashboard-customer.php';
     }
 
-    // menu sidebar khusus pelanggan
+
     public function getMenu()
     {
         return [

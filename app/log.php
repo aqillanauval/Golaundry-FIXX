@@ -1,26 +1,9 @@
 <?php
-// ============================================================
-// log.php  ->  catatan aktivitas disimpan di FILE  (Modul 9: Operasi File)
-//
-// Data utama udah di database, tapi file tetap berguna buat catatan kecil kayak log.
-// Lokasinya: storage/logs/aktivitas.log
-// Satu baris = satu aktivitas, dipisah tanda "|":
-//   2026-11-10 12:30:01|admin@golaundry.com|Tambah layanan|Cuci Kering
-//
-// Fungsi file yang dipakai:
-//   file_exists(), mkdir()     -> cek & bikin folder
-//   fopen('a'), flock(), fwrite(), fclose()  -> nambah baris di akhir file
-//   fopen('r'), fgets()        -> baca baris per baris
-//   filesize()                 -> ukuran file
-//   fopen('w')                 -> ngosongin file
-// ============================================================
-
 function fileLog()
 {
     return FOLDER_LOG . 'aktivitas.log';
 }
 
-// catat satu aktivitas. $pelaku kosong = ambil dari user yang lagi login
 function catatLog($aksi, $detail = '', $pelaku = null)
 {
     if (!file_exists(FOLDER_LOG)) {
@@ -30,7 +13,6 @@ function catatLog($aksi, $detail = '', $pelaku = null)
         $pelaku = isset($_SESSION['user']) ? $_SESSION['user'] : 'tamu';
     }
 
-    // tanda | dan enter dibuang biar format barisnya nggak rusak
     $bersihin = ['|', "\r", "\n"];
     $baris = date('Y-m-d H:i:s') . '|'
            . str_replace($bersihin, ' ', $pelaku) . '|'
@@ -42,7 +24,6 @@ function catatLog($aksi, $detail = '', $pelaku = null)
         error_log('File log nggak bisa dibuka: ' . fileLog());
         return;
     }
-    // kunci file dulu, biar kalau ada 2 orang nulis barengan isinya nggak tabrakan
     if (flock($file, LOCK_EX)) {
         fwrite($file, $baris);
         flock($file, LOCK_UN); // buka kuncinya lagi
@@ -50,7 +31,6 @@ function catatLog($aksi, $detail = '', $pelaku = null)
     fclose($file);
 }
 
-// baca log, ambil $maks baris terakhir, yang paling baru di atas
 function bacaLog($maks = 200)
 {
     $hasil = [];
@@ -58,7 +38,7 @@ function bacaLog($maks = 200)
         return $hasil;
     }
 
-    $file = fopen(fileLog(), 'r'); // mode 'r' = cuma baca
+    $file = fopen(fileLog(), 'r'); 
     while (($baris = fgets($file)) !== false) {
         $baris = trim($baris);
         if ($baris == '') {
@@ -74,12 +54,12 @@ function bacaLog($maks = 200)
             ];
         }
         if (count($hasil) > $maks) {
-            array_shift($hasil); // buang yang paling lama
+            array_shift($hasil); 
         }
     }
     fclose($file);
 
-    return array_reverse($hasil); // dibalik biar yang terbaru di atas
+    return array_reverse($hasil); 
 }
 
 function ukuranLog()
@@ -92,6 +72,6 @@ function ukuranLog()
 
 function kosongkanLog()
 {
-    $file = fopen(fileLog(), 'w'); // mode 'w' = nulis dari awal, isi lama kehapus
+    $file = fopen(fileLog(), 'w'); 
     fclose($file);
 }

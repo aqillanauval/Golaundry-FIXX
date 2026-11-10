@@ -1,9 +1,4 @@
-// ============================================================
-// order.js  -  Halaman Buat Pesanan (pelanggan)
-// Berat cucian belum diketahui saat memesan (ditimbang kurir),
-// jadi yang dihitung di sini adalah HARGA PER SATUAN setelah promo.
-// Angka ini hanya tampilan. Diskon yang disimpan tetap dihitung server.
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('formPesan');
   if (!form) return;
@@ -54,5 +49,5 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   form.addEventListener('change', hitung);
-  hitung(); // hitung sekali saat halaman dibuka (berguna saat mode edit / promo dari dashboard)
+  hitung(); 
 });

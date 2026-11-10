@@ -1,12 +1,4 @@
 <?php
-// ============================================================
-// DashboardAdminController.php
-// Admin ngurus 2 jalur pesanan:
-//   1. Dari aplikasi : kurir jemput & nimbang, terus admin isi beratnya di sini
-//   2. Di kios       : pelanggan dateng langsung, dicatat di menu Transaksi
-// Status pesanan bisa diganti lewat dropdown tanpa reload (AJAX -> balasan JSON)
-// ============================================================
-
 class DashboardAdminController extends Controller
 {
     private $pesananModel;
@@ -21,13 +13,12 @@ class DashboardAdminController extends Controller
         $this->harusLogin('admin');
 
         if ($this->adaPost() && $this->post('aksi') == 'ubah_status') {
-            $this->ubahStatus(); // AJAX
+            $this->ubahStatus(); 
         }
         if ($this->adaPost() && $this->post('aksi') == 'isi_berat') {
             $this->isiBerat();
         }
 
-        // hitung pendapatan hari ini (yang belum ditimbang totalnya masih 0)
         $pesananHariIni = $this->pesananModel->hariIni();
         $pendapatan = 0;
         foreach ($pesananHariIni as $p) {
@@ -51,7 +42,6 @@ class DashboardAdminController extends Controller
         ]);
     }
 
-    // dipanggil JavaScript (fetch) dari dashboard-admin.js, balasannya JSON
     private function ubahStatus()
     {
         $kode = $this->post('id');

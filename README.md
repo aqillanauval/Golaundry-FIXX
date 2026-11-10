@@ -1,109 +1,103 @@
-# 🧺 GOLaundry
+# GOLaundry
 
-**Aplikasi laundry antar-jemput buat anak kos.** Pelanggan tinggal pesan lewat web, kurir jemput & nimbang cuciannya,
-terus pelanggan bisa pantau status cuciannya sampai beres.
+Aplikasi web laundry antar-jemput untuk anak kos. Pelanggan memesan lewat web, kurir menjemput dan menimbang cucian, lalu pelanggan bisa memantau status cuciannya sampai selesai.
 
-Project mata kuliah **Pemrograman Web** · **Basis Data** · **Teknologi Sistem Terintegrasi**
+Dibuat untuk tugas mata kuliah Pemrograman Web, Basis Data, dan Teknologi Sistem Terintegrasi.
 
-> PHP Native · PDO · Supabase (PostgreSQL) · OOP · MVC · AJAX
+Teknologi: PHP native (OOP + MVC), PDO, Supabase (PostgreSQL), JavaScript (AJAX).
 
----
+## Fitur
 
-## ✨ Fiturnya apa aja?
+Pelanggan:
+- Daftar akun dan login
+- Membuat pesanan (pilih layanan dan alamat jemput)
+- Memakai promo
+- Melihat status cucian
+- Riwayat pesanan dan memberi ulasan
+- Cetak nota
+- Ubah profil dan hapus akun
 
-| 👤 Pelanggan | 🧑‍🔧 Admin / Staff |
-|---|---|
-| Daftar akun & login | Dashboard ringkasan hari ini |
-| Bikin pesanan (pilih layanan + alamat jemput) | Isi berat cucian yang udah dijemput |
-| Pakai promo / diskon | Ganti status pesanan **tanpa reload** (AJAX) |
-| Pantau status cucian kayak tiket | Catat pelanggan yang dateng ke kios |
-| Riwayat + kasih ulasan bintang ⭐ | CRUD layanan, promo (+ upload foto), pelanggan, karyawan |
-| Cetak nota / simpan PDF | Cari transaksi, liat log aktivitas, impor data lama |
-| Ubah profil & hapus akun | |
+Admin:
+- Dashboard ringkasan hari ini
+- Mengisi berat cucian yang sudah dijemput
+- Mengubah status pesanan tanpa reload halaman
+- Mencatat pelanggan yang datang langsung ke kios
+- Kelola data layanan, promo (dengan foto), pelanggan, dan karyawan
+- Mencari transaksi, melihat log aktivitas, dan impor data lama
 
-**Akun buat nyoba:**
+Akun untuk mencoba:
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `admin@golaundry.com` | `admin123` |
-| Pelanggan | `pelanggan@golaundry.com` | `pelanggan123` |
+| Admin | admin@golaundry.com | admin123 |
+| Pelanggan | pelanggan@golaundry.com | pelanggan123 |
 
----
+## Cara Menjalankan
 
-## 🚀 Cara jalanin
+### 1. Buat database di Supabase
 
-### 1. Siapin database di Supabase
+1. Buat project baru di supabase.com. Catat Database Password-nya. Region sebaiknya pilih Singapore.
+2. Buka SQL Editor, tempel isi file `database/supabase.sql`, lalu klik Run.
+3. Cek di Table Editor, seharusnya ada 6 tabel: `users`, `layanan`, `karyawan`, `promo`, `pesanan`, `ulasan`.
 
-1. Buka [supabase.com](https://supabase.com) → **New project**
-   - Isi **Database Password**, terus **catat** (nanti dipakai)
-   - Region pilih **Southeast Asia (Singapore)** biar cepet
-2. Masuk ke menu **SQL Editor** → **New query** → copy-paste semua isi `database/supabase.sql` → klik **Run**
-3. Cek di **Table Editor**, harusnya udah ada 6 tabel: `users`, `layanan`, `karyawan`, `promo`, `pesanan`, `ulasan`
+### 2. Atur koneksi database
 
-### 2. Isi pengaturan koneksi
-
-1. Copy file `app/config/database.contoh.php` → kasih nama **`database.php`** (di folder yang sama)
-2. Di Supabase klik tombol **Connect** (di atas) → pilih **Session pooler**. Nanti muncul kayak gini:
+1. Copy `app/config/database.contoh.php` menjadi `app/config/database.php`.
+2. Di Supabase klik Connect, pilih Session pooler. Formatnya seperti ini:
    ```
    postgresql://postgres.abcdefghijkl:[YOUR-PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
    ```
-3. Masukin ke `database.php`:
+3. Isi `database.php` sesuai data tersebut:
    ```php
    $host = 'aws-1-ap-southeast-1.pooler.supabase.com';
-   $user = 'postgres.abcdefghijkl';   // pakai titik + kode project!
-   $pass = 'password database kamu';
+   $user = 'postgres.abcdefghijkl';
+   $pass = 'password database';
    ```
 
-> **Kenapa harus "Session pooler"?** Koneksi langsung Supabase (`db.xxx.supabase.co`) cuma bisa lewat IPv6,
-> padahal wifi kos / kampus biasanya masih IPv4. Session pooler bisa IPv4 dan cocok buat PDO.
+Catatan: pakai Session pooler, bukan koneksi langsung (`db.xxx.supabase.co`), karena koneksi langsung hanya mendukung IPv6.
 
-> 🔒 `database.php` udah masuk `.gitignore`, jadi password kamu nggak ikut ke-push ke GitHub.
-> Kalau file itu **terlanjur** pernah ke-commit, jalanin sekali: `git rm --cached app/config/database.php`
+File `database.php` sudah dimasukkan ke `.gitignore` supaya password tidak ikut ter-upload.
 
-### 3. Nyalain PostgreSQL di XAMPP
+### 3. Aktifkan PostgreSQL di XAMPP
 
-1. XAMPP Control Panel → Apache **Config** → **PHP (php.ini)**
-2. Cari 2 baris ini, terus **hapus titik koma (;)** di depannya:
+1. Buka XAMPP Control Panel, klik Config pada Apache, pilih PHP (php.ini).
+2. Hapus tanda `;` di depan baris berikut:
    ```
    extension=pdo_pgsql
    extension=pgsql
    ```
-3. Save → **Stop** terus **Start** lagi Apache
+3. Simpan, lalu restart Apache.
 
-### 4. Buka aplikasinya
+### 4. Jalankan aplikasi
 
-1. Taruh folder `PemrogramanWeb` di `C:\xampp\htdocs\`
-2. Buka **http://localhost/PemrogramanWeb/** → login pakai akun admin
-3. *(Sekali aja)* Pindahin data lama dari file `.txt`: menu **Log Aktivitas** → **Impor data lama (.txt)** → **Impor sekarang**
+1. Simpan folder `PemrogramanWeb` di `C:\xampp\htdocs\`.
+2. Buka `http://localhost/PemrogramanWeb/` dan login dengan akun admin.
+3. Untuk memindahkan data lama dari file `.txt`, buka menu Log Aktivitas lalu pilih Impor data lama (cukup sekali).
 
----
-
-## 🗂️ Struktur folder (MVC)
+## Struktur Folder
 
 ```
 PemrogramanWeb/
-├── index.php, login.php, layanan.php, ...   ← "pintu masuk" tiap halaman
+├── index.php, login.php, ...   file halaman
 ├── app/
-│   ├── init.php           ← dipanggil paling atas: session + require semua file
-│   ├── koneksi.php        ← bikin $pdo (koneksi ke Supabase)
-│   ├── fungsi.php         ← fungsi kecil: e(), rupiah(), token form, dll
-│   ├── log.php            ← catat aktivitas ke file (fopen, flock, fwrite, fgets)
-│   ├── config/
-│   │   ├── database.contoh.php   ← contoh pengaturan
-│   │   └── database.php          ← pengaturan asli kamu (nggak di-upload)
-│   ├── models/            ← M: urusan database (SELECT, INSERT, UPDATE, DELETE)
-│   ├── views/             ← V: tampilan HTML
-│   └── controllers/       ← C: ngatur alur (baca input → panggil model → tampilin view)
+│   ├── init.php                session dan memanggil semua file
+│   ├── koneksi.php             koneksi database (PDO)
+│   ├── fungsi.php              fungsi bantuan
+│   ├── log.php                 pencatatan log ke file
+│   ├── config/                 pengaturan database
+│   ├── models/
+│   ├── views/
+│   └── controllers/
 ├── database/
-│   ├── supabase.sql       ← bikin tabel di Supabase
-│   └── mysql.sql          ← cadangan kalau mau balik ke MySQL XAMPP
-├── assets/                ← CSS, JavaScript, gambar
-├── uploads/promo/         ← foto promo hasil upload
-├── storage/logs/          ← file log aktivitas
-└── data/                  ← file .txt versi lama (buat diimpor)
+│   ├── supabase.sql
+│   └── mysql.sql
+├── assets/                     css, js, gambar
+├── uploads/promo/              foto promo
+├── storage/logs/               file log
+└── data/                       data lama (.txt)
 ```
 
-### Alur 1 halaman (kayak sequence diagram di Modul 12)
+Alur halaman: file halaman (misalnya `layanan.php`) membuat objek controller lalu memanggil `invoke()`. Controller mengecek login, mengambil data lewat model, kemudian menampilkan view.
 
 ```mermaid
 sequenceDiagram
@@ -115,17 +109,17 @@ sequenceDiagram
     participant V as views/layanan/index.php
 
     U->>P: buka halaman
-    P->>C: new LayananController() → invoke()
+    P->>C: invoke()
     C->>C: harusLogin('admin')
     C->>M: semua()
     M->>DB: SELECT * FROM layanan
-    DB-->>M: data layanan
+    DB-->>M: data
     M-->>C: array data
     C->>V: tampilkan('layanan/index', data)
-    V-->>U: halaman HTML
+    V-->>U: HTML
 ```
 
-### Class & pewarisan (OOP)
+## Class Diagram
 
 ```mermaid
 classDiagram
@@ -141,10 +135,6 @@ classDiagram
     }
     Pengguna <|-- Admin
     Pengguna <|-- Pelanggan
-    Admin : +getMenu()
-    Admin : +getNamaRole()
-    Pelanggan : +getMenu()
-    Pelanggan : +getNamaRole()
 
     class Model {
         #db
@@ -169,9 +159,7 @@ classDiagram
     Controller <|-- TransaksiController
 ```
 
----
-
-## 🧩 Rancangan database (ERD)
+## ERD
 
 ```mermaid
 erDiagram
@@ -183,9 +171,9 @@ erDiagram
     users {
         int id PK
         varchar username UK
-        varchar password "hash"
+        varchar password
         varchar nama
-        varchar role "admin / customer"
+        varchar role
     }
     layanan {
         int id PK
@@ -196,13 +184,13 @@ erDiagram
     promo {
         int id PK
         varchar judul
-        smallint diskon "1-100"
+        smallint diskon
         date berlaku_sampai
         varchar foto
     }
     pesanan {
         int id PK
-        varchar kode UK "No. Nota"
+        varchar kode UK
         int user_id FK
         int layanan_id FK
         int promo_id FK
@@ -213,7 +201,7 @@ erDiagram
     ulasan {
         int id PK
         int pesanan_id FK
-        smallint rating "1-5"
+        smallint rating
         varchar komentar
     }
     karyawan {
@@ -224,60 +212,53 @@ erDiagram
     }
 ```
 
-Beberapa catatan soal desain tabelnya:
-- **Akun pelanggan dihapus → riwayat pesanannya tetap ada.** Ini karena `user_id` pakai `ON DELETE SET NULL`.
-- **Harga & nama layanan disalin ke tabel pesanan.** Jadi kalau admin ganti harga, nota lama nggak ikut berubah.
-- **Satu pesanan cuma bisa punya 1 ulasan.** `ulasan.pesanan_id` dibikin `UNIQUE`.
-- **`CHECK` jagain isi kolom.** Contohnya rating cuma boleh 1–5, diskon 0–100, dan status cuma 5 pilihan.
-- **RLS dinyalain di semua tabel.** Data nggak bisa diintip lewat API publik Supabase, tapi PHP tetap bisa akses.
+Keterangan:
+- Jika akun pelanggan dihapus, pesanannya tetap tersimpan (`user_id` memakai `ON DELETE SET NULL`).
+- Nama dan harga layanan disalin ke tabel pesanan, jadi nota lama tidak berubah kalau harga diganti.
+- Satu pesanan hanya bisa punya satu ulasan.
+- Beberapa kolom dibatasi dengan `CHECK`, misalnya rating 1-5 dan diskon 0-100.
 
----
+## Materi yang Dipakai
 
-## 📚 Materi kuliah yang dipakai
+- Koneksi PDO dan try/catch: `app/koneksi.php`
+- Prepared statement: semua file di `app/models/`
+- Fetch mode (`FETCH_ASSOC`, `FETCH_CLASS`): `Model.php`, `PesananModel.php`
+- Transaksi database: `UserModel::hapusAkunPelanggan()`, `ImporModel::jalankan()`
+- Registrasi, login, ubah profil, hapus akun dengan `password_hash()`: `AuthController`, `ProfileController`
+- Operasi file (Modul 9): `app/log.php`, `ImporModel`, upload foto di `PromoModel`
+- OOP dan MVC (Modul 12): folder `app/models`, `app/views`, `app/controllers`
+- AJAX dengan JSON: `dashboard-admin.js` dan `DashboardAdminController`
 
-| Materi | Dipakai di mana |
+## Keamanan
+
+- Query memakai prepared statement.
+- Password disimpan dalam bentuk hash.
+- Form memakai token CSRF.
+- Pesan error database tidak ditampilkan ke user, hanya dicatat di log.
+- Folder `app/`, `database/`, `storage/`, dan `data/` tidak bisa diakses dari browser (`.htaccess`).
+- RLS aktif di Supabase.
+
+## Masalah yang Sering Muncul
+
+| Error | Solusi |
 |---|---|
-| **Koneksi PDO** (DSN, `ERRMODE_EXCEPTION`, `FETCH_ASSOC`, `try/catch` + `error_log`) | `app/koneksi.php` |
-| **`query()`** buat SQL tanpa input user | `LayananModel::semua()`, `jumlahPelanggan()` |
-| **Prepared statement** `prepare()` → `execute()` | semua file di `app/models/` |
-| **Fetch mode**: `FETCH_ASSOC`, `FETCH_CLASS`, `fetchColumn()` | `Model.php`, `PesananModel.php` (objek `Pesanan`) |
-| **INSERT + `lastInsertId()`**, UPDATE/DELETE **selalu pakai WHERE**, `rowCount()` | `UserModel::tambah()`, `PesananModel::isiBerat()` |
-| **Data kembar (UNIQUE)** → kode error 23000 / 23505 | `UserModel::tambah()` |
-| **Pencarian aman pakai LIKE** (anti SQL injection) | `PesananModel::semua()` + kotak cari di menu Transaksi |
-| **Transaksi** `beginTransaction()` / `commit()` / `rollBack()` | `UserModel::hapusAkunPelanggan()`, `ImporModel::jalankan()` |
-| **Tugas**: Registrasi, Login, Ubah Profil, Hapus Akun + `password_hash()` / `password_verify()` | `AuthController`, `ProfileController`, `Pengguna::cekPassword()` |
-| **Operasi File** (Modul 9): `fopen` (r/a/w), `flock`, `fwrite`, `fgets`, `fclose`, `file_exists`, `filesize`, `mkdir`, `explode` | `app/log.php`, `ImporModel::bacaTxt()`, upload foto di `PromoModel` |
-| **Database** (Modul 11): koneksi di file terpisah + `require` | `app/koneksi.php` dipanggil dari `app/init.php` |
-| **OOP** (Modul 12): class, `public`/`private`/`protected`, getter/setter, `extends`, override | `Pengguna` → `Admin` / `Pelanggan`, `Model` → `*Model`, `Controller` → `*Controller` |
-| **MVC** (Modul 12): model, view, controller, `invoke()` | folder `app/models`, `app/views`, `app/controllers` |
-| **Sistem terintegrasi**: PHP ↔ database cloud, JavaScript ↔ PHP lewat JSON | `koneksi.php` (Supabase), `dashboard-admin.js` + `DashboardAdminController::ubahStatus()` |
+| `File app/config/database.php belum ada` | Copy `database.contoh.php` menjadi `database.php` |
+| `could not find driver` | Aktifkan `pdo_pgsql` di php.ini. Kalau masih error, tambahkan `LoadFile "C:/xampp/php/libpq.dll"` di httpd-xampp.conf lalu restart Apache |
+| Loading lama lalu gagal | Pastikan host memakai Session pooler |
+| `password authentication failed` | Cek user (`postgres.kodeproject`) dan Database Password |
+| `Tenant or user not found` | Host atau kode project salah |
+| `relation "users" does not exist` | `supabase.sql` belum dijalankan |
+| Tidak bisa konek setelah lama tidak dipakai | Project Supabase ter-pause, klik Restore di dashboard |
 
----
+## Menggunakan MySQL XAMPP
 
-## 🛡️ Keamanan yang udah dipasang
+Import `database/mysql.sql` lewat phpMyAdmin, lalu ubah `database.php` menjadi:
 
-- **Prepared statement.** Input user nggak pernah disambung langsung ke SQL.
-- **Password di-hash.** Disimpan pakai `password_hash()`, jadi nggak ada password asli di database.
-- **Token form (CSRF).** Setiap form punya token acak, jadi form palsu dari web lain bakal ditolak.
-- **Error database disembunyiin.** Detailnya cuma dicatat di log server (`C:\xampp\php\logs\php_error_log`).
-- **Folder penting dikunci.** `app/`, `database/`, `storage/`, dan `data/` nggak bisa dibuka dari browser (`.htaccess`).
-- **RLS aktif di Supabase.**
-
----
-
-## 🆘 Kalau error
-
-| Muncul tulisan | Solusinya |
-|---|---|
-| `File app/config/database.php belum ada` | Copy dulu `database.contoh.php` jadi `database.php` |
-| `could not find driver` | `extension=pdo_pgsql` belum dinyalain (lihat langkah 3). Kalau udah tapi masih error, tambahin `LoadFile "C:/xampp/php/libpq.dll"` di **Config → Apache (httpd-xampp.conf)** terus restart Apache |
-| Loading lama terus gagal | Host-nya masih `db.xxx.supabase.co`. Ganti pakai host **Session pooler** |
-| `password authentication failed` | User harus `postgres.kodeproject` (ada titiknya). Password yang dipakai itu **Database Password**, bukan API key |
-| `Tenant or user not found` | Host / kode project salah ketik. Copy ulang dari tombol **Connect** |
-| `relation "users" does not exist` | `database/supabase.sql` belum di-Run di SQL Editor |
-| Tiba-tiba nggak bisa konek setelah lama nggak dibuka | Project Supabase gratis bisa ke-*pause*. Buka dashboard Supabase → **Restore** |
-
-### Mau balik pakai MySQL XAMPP?
-Import `database/mysql.sql` lewat phpMyAdmin, terus di `database.php` ganti jadi
-`$jenisDb = 'mysql'; $host = '127.0.0.1'; $port = '3306'; $namaDb = 'golaundry'; $user = 'root'; $pass = '';`
-Kode lainnya nggak perlu diubah. Itulah enaknya PDO 😎
+```php
+$jenisDb = 'mysql';
+$host    = '127.0.0.1';
+$port    = '3306';
+$namaDb  = 'golaundry';
+$user    = 'root';
+$pass    = '';
+```

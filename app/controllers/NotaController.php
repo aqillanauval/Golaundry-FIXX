@@ -1,10 +1,4 @@
 <?php
-// ============================================================
-// NotaController.php  ->  nota pembayaran (bisa dicetak / disimpan PDF)
-// Dibuka lewat link nota.php?id=KODE
-// Pelanggan cuma bisa buka nota punya sendiri, admin bisa semua.
-// ============================================================
-
 class NotaController extends Controller
 {
     public function invoke()

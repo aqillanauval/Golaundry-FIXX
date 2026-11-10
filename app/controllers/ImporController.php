@@ -1,6 +1,4 @@
 <?php
-// ImporController.php  ->  pindahin data lama dari file .txt ke database (khusus admin)
-
 class ImporController extends Controller
 {
     public function invoke()

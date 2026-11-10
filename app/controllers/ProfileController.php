@@ -1,10 +1,4 @@
 <?php
-// ============================================================
-// ProfileController.php  ->  Ubah Profil & Hapus Akun (admin & pelanggan)
-//   aksi = simpan     : ganti nama dan/atau password
-//   aksi = hapus_akun : pelanggan hapus akunnya sendiri (wajib ketik password)
-// ============================================================
-
 class ProfileController extends Controller
 {
     public function invoke()
@@ -16,7 +10,6 @@ class ProfileController extends Controller
         $errorHapus = '';
         $namaDiForm = $saya->getNama();
 
-        // ----- ubah profil -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $namaBaru = bersihkan($this->post('nama'), 100);
             $passwordBaru = isset($_POST['password_baru']) ? $_POST['password_baru'] : '';
@@ -38,7 +31,6 @@ class ProfileController extends Controller
             }
         }
 
-        // ----- hapus akun sendiri (khusus pelanggan) -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus_akun' && !$saya->isAdmin()) {
             $passwordKonfirmasi = isset($_POST['konfirmasi_password']) ? $_POST['konfirmasi_password'] : '';
 

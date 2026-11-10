@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// RiwayatController.php  ->  riwayat pesanan pelanggan + CRUD Ulasan
-// Pesanan yang udah "Selesai" / "Diambil" boleh dikasih ulasan.
-// ============================================================
-
 class RiwayatController extends Controller
 {
     public function invoke()
@@ -13,7 +8,7 @@ class RiwayatController extends Controller
         $ulasanModel = new UlasanModel();
 
         $error = '';
-        $formUlasan = null; // kalau nggak null, form ulasan ditampilin
+        $formUlasan = null;
 
         if ($this->adaPost()) {
             $kode = $this->post('id');
@@ -23,7 +18,6 @@ class RiwayatController extends Controller
                 $this->pindahKe('riwayat.php');
             }
 
-            // ----- CREATE & UPDATE ulasan -----
             if ($this->post('aksi') == 'simpan_ulasan') {
                 $rating = (int)$this->post('rating');
                 $komentar = bersihkan($this->post('komentar'), 500);
@@ -41,7 +35,6 @@ class RiwayatController extends Controller
                 $formUlasan = ['id' => $kode, 'rating' => $rating, 'komentar' => $komentar];
             }
 
-            // ----- DELETE ulasan -----
             if ($this->post('aksi') == 'hapus') {
                 $ulasanModel->hapusByPesanan($pesanan->id);
                 catatLog('Hapus ulasan', $kode);
@@ -50,7 +43,6 @@ class RiwayatController extends Controller
             }
         }
 
-        // klik "Beri Ulasan" / "Edit" -> riwayat.php?ulas=KODE
         if ($formUlasan == null && $this->get('ulas') != '') {
             $pesanan = $pesananModel->cariMilikUser($this->get('ulas'), $saya->getId());
             if ($pesanan && $pesanan->sudahSelesai()) {

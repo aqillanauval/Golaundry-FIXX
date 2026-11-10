@@ -1,15 +1,7 @@
 <?php
-// ============================================================
-// UserModel.php  ->  semua urusan tabel users
-// Dipakai buat: Registrasi, Login, Ubah Profil, Hapus Akun
-// Password disimpan pakai password_hash(), dicek pakai password_verify()
-// ============================================================
-
 class UserModel extends Model
 {
     protected $tabel = 'users';
-
-    // ubah 1 baris dari database jadi objek Admin atau Pelanggan
     private function jadiObjek($data)
     {
         if ($data['role'] == 'admin') {
@@ -21,7 +13,7 @@ class UserModel extends Model
     public function cariById($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute(['id' => (int)$id]); // (int) = paksa jadi angka
+        $stmt->execute(['id' => (int)$id]); 
         $data = $stmt->fetch();
 
         if (!$data) {
@@ -30,7 +22,6 @@ class UserModel extends Model
         return $this->jadiObjek($data);
     }
 
-    // dipakai waktu login. Pakai prepared statement biar aman dari SQL injection
     public function cariByUsername($username)
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :username");
@@ -56,10 +47,9 @@ class UserModel extends Model
     public function jumlahPelanggan()
     {
         $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role = 'customer'");
-        return (int)$stmt->fetchColumn(); // fetchColumn() = ambil 1 nilai aja
+        return (int)$stmt->fetchColumn();
     }
 
-    // tambah user baru. Hasilnya id user baru, atau 0 kalau username udah dipakai
     public function tambah($username, $password, $nama, $role = 'customer')
     {
         try {
@@ -68,17 +58,16 @@ class UserModel extends Model
             );
             $stmt->execute([
                 'username' => $username,
-                'password' => password_hash($password, PASSWORD_DEFAULT), // JANGAN simpan password asli
+                'password' => password_hash($password, PASSWORD_DEFAULT), 
                 'nama'     => $nama,
                 'role'     => $role,
             ]);
-            return (int)$this->db->lastInsertId(); // id dari baris yang baru masuk
+            return (int)$this->db->lastInsertId(); 
         } catch (PDOException $e) {
-            // kode 23000 (MySQL) / 23505 (PostgreSQL) = data kembar di kolom UNIQUE
             if ($e->getCode() == '23000' || $e->getCode() == '23505') {
                 return 0;
             }
-            throw $e; // error lain dilempar lagi
+            throw $e; 
         }
     }
 
@@ -97,34 +86,25 @@ class UserModel extends Model
         ]);
     }
 
-    // ------------------------------------------------------------
-    // HAPUS AKUN PELANGGAN  ->  pakai TRANSAKSI
-    //   Langkah 1: pesanan yang masih "Menunggu Jemput" dibatalin (dihapus)
-    //   Langkah 2: akunnya dihapus
-    //              (pesanan lama tetap ada sebagai riwayat, user_id-nya jadi NULL)
-    // Dua langkah ini harus berhasil BARENGAN.
-    // Kalau salah satu gagal -> rollBack(), semua dibatalin, data balik kayak semula.
-    // Akun admin aman karena ada syarat  role = 'customer'.
-    // ------------------------------------------------------------
     public function hapusAkunPelanggan($id)
     {
         try {
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare("DELETE FROM pesanan WHERE user_id = :id AND status = 'Menunggu Jemput'");
-            $stmt->execute(['id' => (int)$id]); // (int) = paksa jadi angka
+            $stmt->execute(['id' => (int)$id]); 
 
             $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id AND role = 'customer'");
-            $stmt->execute(['id' => (int)$id]); // (int) = paksa jadi angka
+            $stmt->execute(['id' => (int)$id]); 
             if ($stmt->rowCount() != 1) {
                 throw new Exception('Akun pelanggan nggak ketemu.');
             }
 
-            $this->db->commit(); // simpan semua perubahan
+            $this->db->commit(); 
             return true;
         } catch (Exception $e) {
             if ($this->db->inTransaction()) {
-                $this->db->rollBack(); // batalin semua perubahan
+                $this->db->rollBack(); 
             }
             error_log('Hapus akun gagal: ' . $e->getMessage());
             return false;

@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// PromoController.php  ->  CRUD Promo + upload foto (khusus admin)
-// ============================================================
 
 class PromoController extends Controller
 {
@@ -19,7 +16,6 @@ class PromoController extends Controller
         $error = '';
         $form = ['id' => '', 'judul' => '', 'deskripsi' => '', 'diskon' => '', 'berlaku_sampai' => '', 'foto' => ''];
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $form['id'] = $this->post('id');
             $form['judul'] = bersihkan($this->post('judul'), 100);
@@ -45,7 +41,6 @@ class PromoController extends Controller
             } elseif ($form['id'] != '' && !$lama) {
                 $error = 'Promo nggak ketemu.';
             } else {
-                // kalau admin milih file foto, upload dulu
                 $fotoBaru = '';
                 if (isset($_FILES['foto']) && $_FILES['foto']['error'] != UPLOAD_ERR_NO_FILE) {
                     $hasil = $this->model->uploadFoto($_FILES['foto']);
@@ -71,7 +66,6 @@ class PromoController extends Controller
             }
         }
 
-        // ----- DELETE -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $promo = $this->model->cari($this->post('id'));
             if ($promo && $this->model->hapus($promo['id'])) {

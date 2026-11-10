@@ -1,12 +1,4 @@
 <?php
-// ============================================================
-// TransaksiController.php  ->  CRUD Transaksi (khusus admin)
-//   1. Catat pelanggan yang dateng langsung ke kios (berat langsung diisi)
-//   2. Liat, cari, edit, hapus semua transaksi
-//      (pesanan aplikasi yang belum ditimbang juga bisa diisi beratnya di sini)
-// Fitur cari (transaksi.php?cari=...) pakai LIKE + prepared statement.
-// ============================================================
-
 class TransaksiController extends Controller
 {
     private $pesananModel;
@@ -27,7 +19,6 @@ class TransaksiController extends Controller
         $error = '';
         $form = ['id' => '', 'nama_pelanggan' => '', 'layanan' => '', 'berat' => '', 'status' => 'Diterima', 'catatan' => '', 'promo' => ''];
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $form['id'] = $this->post('id');
             $form['nama_pelanggan'] = bersihkan($this->post('nama_pelanggan'), 100);
@@ -49,12 +40,10 @@ class TransaksiController extends Controller
             }
             $masihMenunggu = $lama && $lama->menungguJemput();
 
-            // pesanan aplikasi yang belum ditimbang: begitu berat diisi, status otomatis "Diterima"
             if ($masihMenunggu) {
                 $form['status'] = 'Diterima';
             }
 
-            // promo cuma bisa dipilih waktu bikin transaksi baru
             $promo = null;
             $errorPromo = '';
             if (!$lagiEdit && $form['promo'] != '') {
@@ -77,7 +66,6 @@ class TransaksiController extends Controller
             } elseif ($errorPromo != '') {
                 $error = $errorPromo;
             } elseif (!$lagiEdit) {
-                // CREATE (pelanggan kios)
                 $kode = $this->pesananModel->buat([
                     'user_id'        => null,
                     'nama_pelanggan' => $form['nama_pelanggan'],
@@ -92,7 +80,6 @@ class TransaksiController extends Controller
                 $this->pesan('sukses', 'Transaksi pelanggan kios berhasil dicatat.');
                 $this->pindahKe('transaksi.php');
             } else {
-                // UPDATE
                 $this->pesananModel->ubahOlehAdmin($form['id'], $layanan, $form['berat'], $form['status'], $form['catatan']);
                 catatLog($masihMenunggu ? 'Isi berat' : 'Ubah transaksi', $form['id']);
                 $this->pesan('sukses', $masihMenunggu ? 'Berat disimpan, pesanan sekarang berstatus Diterima.' : 'Transaksi berhasil diubah.');
@@ -100,7 +87,6 @@ class TransaksiController extends Controller
             }
         }
 
-        // ----- DELETE -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $kode = $this->post('id');
             if ($this->pesananModel->hapusByKode($kode)) {
@@ -110,7 +96,6 @@ class TransaksiController extends Controller
             $this->pindahKe('transaksi.php');
         }
 
-        // ----- mode edit: transaksi.php?edit=KODE -----
         if ($this->get('edit') != '' && $error == '') {
             $p = $this->pesananModel->cariByKode($this->get('edit'));
             if ($p) {
@@ -126,7 +111,6 @@ class TransaksiController extends Controller
             }
         }
 
-        // data pesanan yang lagi diedit (buat info promo & mode "isi berat")
         $diedit = null;
         if ($form['id'] != '') {
             $diedit = $this->pesananModel->cariByKode($form['id']);
@@ -135,7 +119,6 @@ class TransaksiController extends Controller
             }
         }
 
-        // ----- daftar transaksi + pencarian -----
         $cari = bersihkan($this->get('cari'), 100);
         $semua = $this->pesananModel->semua($cari);
 

@@ -1,5 +1,4 @@
 <?php
-// Admin.php  ->  anak dari class Pengguna, buat admin / staff laundry
 
 class Admin extends Pengguna
 {
@@ -15,7 +14,6 @@ class Admin extends Pengguna
         return 'dashboard-admin.php';
     }
 
-    // menu sidebar khusus admin: [nama file, tulisan, ikon]
     public function getMenu()
     {
         return [

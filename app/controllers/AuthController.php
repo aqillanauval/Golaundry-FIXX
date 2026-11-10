@@ -1,19 +1,9 @@
 <?php
-// ============================================================
-// AuthController.php  ->  Login, Daftar (register), Logout
-//
-// STATE yang dipakai:
-//   SESSION : tanda udah login ($_SESSION['user_id'], 'user', 'nama', 'role')
-//   COOKIE  : 'ingat_user' (fitur "Ingat saya", 30 hari)
-// Login dicek ke tabel users pakai prepared statement + password_verify()
-// ============================================================
-
 class AuthController extends Controller
 {
     private $halaman;
     private $userModel;
 
-    // $halaman: 'index' / 'login' / 'register' / 'logout'
     public function __construct($halaman)
     {
         $this->halaman = $halaman;
@@ -33,7 +23,6 @@ class AuthController extends Controller
         }
     }
 
-    // index.php: selalu mulai dari halaman login, sesi lama dihapus
     private function index()
     {
         $_SESSION = [];
@@ -43,7 +32,6 @@ class AuthController extends Controller
 
     private function login()
     {
-        // udah login? langsung ke dashboard
         if (isset($_SESSION['user_id'])) {
             $p = $this->userModel->cariById($_SESSION['user_id']);
             if ($p) {
@@ -69,15 +57,12 @@ class AuthController extends Controller
                 $pengguna = $this->userModel->cariByUsername($username);
 
                 if ($pengguna && $pengguna->cekPassword($password)) {
-                    // LOGIN BERHASIL -> simpan ke SESSION
-                    session_regenerate_id(true); // ganti ID session biar lebih aman
+                    session_regenerate_id(true); 
                     $_SESSION['user_id'] = $pengguna->getId();
                     $_SESSION['user'] = $pengguna->getUsername();
                     $_SESSION['nama'] = $pengguna->getNama();
                     $_SESSION['role'] = $pengguna->getRole();
-                    unset($_SESSION['token']); // token form dibikin baru
-
-                    // "Ingat saya" -> simpan username di COOKIE 30 hari
+                    unset($_SESSION['token']); 
                     if ($ingat) {
                         setcookie('ingat_user', $username, time() + (60 * 60 * 24 * 30), '/');
                     } else {
@@ -113,7 +98,6 @@ class AuthController extends Controller
             $ulangi = isset($_POST['ulangi']) ? $_POST['ulangi'] : '';
             $isi = ['nama' => $nama, 'username' => $username];
 
-            // validasi di server (WAJIB, karena validasi JavaScript bisa diakalin)
             if ($nama == '' || $username == '' || $password == '' || $ulangi == '') {
                 $error = 'Semua kolom wajib diisi ya.';
             } elseif (!usernameValid($username)) {
@@ -134,7 +118,6 @@ class AuthController extends Controller
         $this->tampilkan('auth/register', ['error' => $error, 'isi' => $isi]);
     }
 
-    // cookie "ingat saya" sengaja dibiarin, biar email tetap keisi di form login
     private function logout()
     {
         if (isset($_SESSION['user'])) {
@@ -143,7 +126,7 @@ class AuthController extends Controller
         $_SESSION = [];
         session_destroy();
 
-        session_start(); // session baru (kosong) cuma buat nampilin pesan
+        session_start(); 
         $this->pesan('sukses', 'Kamu udah keluar. Sampai jumpa lagi!');
         $this->pindahKe('login.php');
     }

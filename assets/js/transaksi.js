@@ -1,8 +1,4 @@
-// ============================================================
-// transaksi.js  -  Filter cepat di tabel riwayat transaksi
-// (Semua / Dari aplikasi / Di kios / Perlu dijemput).
-// Baris tabel punya atribut data-asal dan data-status dari PHP.
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const wadah = document.getElementById('filterTransaksi');
   if (!wadah) return;

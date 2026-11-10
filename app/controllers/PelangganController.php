@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// PelangganController.php  ->  CRUD akun pelanggan (khusus admin)
-// Admin bisa nambah pelanggan, ganti nama/password, dan hapus akun.
-// ============================================================
-
 class PelangganController extends Controller
 {
     private $userModel;
@@ -20,16 +15,13 @@ class PelangganController extends Controller
         $error = '';
         $form = ['id' => '', 'username' => '', 'nama' => ''];
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $form['id'] = $this->post('id');
             $form['username'] = normalUser($this->post('username'));
             $form['nama'] = bersihkan($this->post('nama'), 100);
             $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-            if ($form['id'] != '') {
-                // UPDATE: ganti nama (dan password kalau diisi)
-                $pelanggan = $this->userModel->cariById($form['id']);
+            if ($form['id'] != '') {                $pelanggan = $this->userModel->cariById($form['id']);
                 if (!$pelanggan || $pelanggan->isAdmin()) {
                     $error = 'Pelanggan nggak ketemu.';
                 } elseif ($form['nama'] == '') {
@@ -49,7 +41,6 @@ class PelangganController extends Controller
                     $form['username'] = $pelanggan->getUsername();
                 }
             } else {
-                // CREATE
                 if ($form['nama'] == '' || $form['username'] == '') {
                     $error = 'Nama sama email/No. HP wajib diisi ya.';
                 } elseif (!usernameValid($form['username'])) {
@@ -66,7 +57,6 @@ class PelangganController extends Controller
             }
         }
 
-        // ----- DELETE (pakai transaksi, lihat UserModel) -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $pelanggan = $this->userModel->cariById($this->post('id'));
             if ($pelanggan && !$pelanggan->isAdmin() && $this->userModel->hapusAkunPelanggan($pelanggan->getId())) {

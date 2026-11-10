@@ -1,19 +1,8 @@
 <?php
-// ============================================================
-// PesananModel.php  ->  semua urusan tabel pesanan (transaksi laundry)
-//
-// Hasil SELECT diambil pakai PDO::FETCH_CLASS, jadi tiap baris langsung
-// jadi objek Pesanan (lihat Pesanan.php).
-//
-// Nama pelanggan diambil pakai LEFT JOIN ke tabel users. Jadi kalau pelanggan
-// ganti nama di profil, semua pesanannya ikut nampilin nama yang baru.
-// ============================================================
-
 class PesananModel extends Model
 {
     protected $tabel = 'pesanan';
 
-    // bagian SELECT yang sama untuk semua query di bawah
     private $sqlDasar = "
         SELECT p.*,
                COALESCE(u.nama, p.nama_pelanggan) AS pelanggan,
@@ -23,9 +12,7 @@ class PesananModel extends Model
         LEFT JOIN users  u  ON u.id = p.user_id
         LEFT JOIN ulasan ul ON ul.pesanan_id = p.id";
 
-    // ================= READ =================
 
-    // semua pesanan (buat admin). Bisa sambil dicari pakai $kataKunci
     public function semua($kataKunci = '')
     {
         if ($kataKunci == '') {
@@ -33,8 +20,7 @@ class PesananModel extends Model
             return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
         }
 
-        // pencarian AMAN pakai LIKE + parameter (materi PDO Langkah 7)
-        // input user nggak pernah disambung langsung ke SQL, jadi ' OR '1'='1 nggak ngaruh
+
         $cari = '%' . strtolower($kataKunci) . '%';
         $stmt = $this->db->prepare($this->sqlDasar . "
             WHERE LOWER(p.kode) LIKE :cari1
@@ -45,7 +31,6 @@ class PesananModel extends Model
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    // pesanan punya 1 pelanggan, terbaru di atas
     public function milikUser($userId)
     {
         $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.user_id = :user_id ORDER BY p.tanggal DESC, p.id DESC");
@@ -53,21 +38,18 @@ class PesananModel extends Model
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    // pesanan dari aplikasi yang masih nunggu dijemput kurir
     public function menungguJemput()
     {
         $stmt = $this->db->query($this->sqlDasar . " WHERE p.status = 'Menunggu Jemput' ORDER BY p.tanggal, p.id");
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    // 8 pesanan terbaru yang udah ditimbang
     public function sudahDitimbang()
     {
         $stmt = $this->db->query($this->sqlDasar . " WHERE p.berat > 0 ORDER BY p.tanggal DESC, p.id DESC LIMIT 8");
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    // pesanan yang masuk hari ini
     public function hariIni()
     {
         $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.tanggal >= :awal AND p.tanggal < :akhir");
@@ -84,7 +66,6 @@ class PesananModel extends Model
         return (int)$stmt->fetchColumn();
     }
 
-    // cari 1 pesanan pakai No. Nota
     public function cariByKode($kode)
     {
         $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.kode = :kode");
@@ -98,7 +79,6 @@ class PesananModel extends Model
         return $pesanan;
     }
 
-    // sama kayak di atas, tapi harus punya user ini (biar nggak bisa intip pesanan orang lain)
     public function cariMilikUser($kode, $userId)
     {
         $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.kode = :kode AND p.user_id = :user_id");
@@ -112,14 +92,10 @@ class PesananModel extends Model
         return $pesanan;
     }
 
-    // ================= CREATE =================
 
-    // $data berisi: user_id, nama_pelanggan, sumber, layanan (array), berat, catatan, status, promo (array / null)
-    // Harga, nama layanan, nama promo & diskon DISALIN ke pesanan,
-    // biar nota lama nggak ikut berubah kalau admin ganti harga atau hapus promo.
     public function buat($data)
     {
-        $kode = uniqid('ORD'); // No. Nota acak, contoh: ORD6ab7da28cce8f
+        $kode = uniqid('ORD'); 
         $layanan = $data['layanan'];
         $promo = $data['promo'];
 
@@ -151,10 +127,6 @@ class PesananModel extends Model
         return $kode;
     }
 
-    // ================= UPDATE =================
-
-    // pelanggan ngedit pesanannya sendiri (cuma boleh selama "Menunggu Jemput")
-    // $promo: array promo baru, null = tanpa promo, 'lama' = promonya nggak diganti
     public function ubahOlehPelanggan($kode, $userId, $layanan, $catatan, $promo)
     {
         $lama = $this->cariMilikUser($kode, $userId);
@@ -191,7 +163,6 @@ class PesananModel extends Model
         return true;
     }
 
-    // admin ngedit transaksi (promonya nggak diubah)
     public function ubahOlehAdmin($kode, $layanan, $berat, $status, $catatan)
     {
         $stmt = $this->db->prepare(
@@ -207,7 +178,6 @@ class PesananModel extends Model
         ]);
     }
 
-    // kurir udah nimbang -> isi berat, status jadi "Diterima"
     public function isiBerat($kode, $berat)
     {
         $stmt = $this->db->prepare(
@@ -215,19 +185,15 @@ class PesananModel extends Model
              WHERE kode = :kode AND status = 'Menunggu Jemput'"
         );
         $stmt->execute(['berat' => $berat, 'kode' => $kode]);
-        return $stmt->rowCount() == 1; // true kalau berhasil
+        return $stmt->rowCount() == 1; 
     }
 
-    // dipanggil lewat AJAX di dashboard admin
     public function ubahStatus($kode, $status)
     {
         $stmt = $this->db->prepare("UPDATE pesanan SET status = :status WHERE kode = :kode AND berat > 0");
         $stmt->execute(['status' => $status, 'kode' => $kode]);
     }
 
-    // ================= DELETE =================
-
-    // pelanggan batalin pesanan (cuma boleh selama "Menunggu Jemput")
     public function batalkan($kode, $userId)
     {
         $stmt = $this->db->prepare(
@@ -237,7 +203,6 @@ class PesananModel extends Model
         return $stmt->rowCount() == 1;
     }
 
-    // admin hapus transaksi (ulasannya ikut kehapus karena ON DELETE CASCADE)
     public function hapusByKode($kode)
     {
         $stmt = $this->db->prepare("DELETE FROM pesanan WHERE kode = :kode");

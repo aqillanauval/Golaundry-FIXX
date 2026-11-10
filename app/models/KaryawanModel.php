@@ -1,6 +1,4 @@
 <?php
-// KaryawanModel.php  ->  CRUD tabel karyawan
-
 class KaryawanModel extends Model
 {
     protected $tabel = 'karyawan';

@@ -1,30 +1,15 @@
 <?php
-// ============================================================
-// ImporModel.php  ->  mindahin data lama dari file .txt (folder data/) ke database
-//
-// Dua materi kepakai di sini:
-//  1. Operasi File (Modul 9): fopen('r'), fgets(), explode(), file_exists(), filesize()
-//  2. TRANSAKSI database: semua proses impor dibungkus 1 transaksi.
-//     Kalau ada 1 baris aja yang gagal -> rollBack(), database balik kayak semula.
-//     Jadi nggak bakal ada data yang masuk setengah-setengah.
-//
-// Data yang udah ada (username / nama layanan / judul promo / No. Nota sama) dilewatin,
-// jadi tombol impor aman diklik lebih dari sekali.
-// ============================================================
-
 class ImporModel extends Model
 {
-    // nama file => jumlah kolom per baris
     private $daftarFile = [
-        'users.txt'    => 4,  // username,password,nama,role
-        'layanan.txt'  => 4,  // id,nama,harga,satuan
-        'karyawan.txt' => 4,  // id,nama,jabatan,no_hp
-        'promo.txt'    => 6,  // id,judul,deskripsi,diskon,sampai,foto
-        'orders.txt'   => 11, // id,username,layanan,harga,satuan,qty,catatan,status,tanggal,diskon,promo
-        'ulasan.txt'   => 3,  // id_pesanan,rating,komentar
+        'users.txt'    => 4, 
+        'layanan.txt'  => 4,  
+        'karyawan.txt' => 4, 
+        'promo.txt'    => 6, 
+        'orders.txt'   => 11, 
+        'ulasan.txt'   => 3,  
     ];
 
-    // baca file .txt baris per baris, tiap baris dipecah pakai explode(',')
     public function bacaTxt($namaFile, $jumlahKolom)
     {
         $hasil = [];
@@ -37,10 +22,9 @@ class ImporModel extends Model
         while (($baris = fgets($file)) !== false) {
             $baris = trim($baris);
             if ($baris == '') {
-                continue; // lewatin baris kosong
+                continue;
             }
             $kolom = explode(',', $baris, $jumlahKolom);
-            // orders.txt versi lama cuma 9 kolom, sisanya diisi kosong
             while (count($kolom) < $jumlahKolom) {
                 $kolom[] = '';
             }
@@ -50,7 +34,6 @@ class ImporModel extends Model
         return $hasil;
     }
 
-    // info tiap file buat ditampilin sebelum impor
     public function ringkasan()
     {
         $hasil = [];
@@ -66,7 +49,6 @@ class ImporModel extends Model
         return $hasil;
     }
 
-    // "26 Sep 2026 16:43" -> "2026-09-26 16:43:00"
     private function ubahTanggal($teks)
     {
         $bulan = ['Jan' => 1, 'Feb' => 2, 'Mar' => 3, 'Apr' => 4, 'Mei' => 5, 'Jun' => 6,
@@ -80,7 +62,6 @@ class ImporModel extends Model
         return date('Y-m-d H:i:s');
     }
 
-    // cek ada data atau nggak (dipakai biar nggak dobel)
     private function sudahAda($sql, $param)
     {
         $stmt = $this->db->prepare($sql);
@@ -88,9 +69,6 @@ class ImporModel extends Model
         return $stmt->fetch();
     }
 
-    // ------------------------------------------------------------
-    // jalanin impor. Hasilnya jumlah data baru per tabel
-    // ------------------------------------------------------------
     public function jalankan()
     {
         $jumlah = ['users' => 0, 'layanan' => 0, 'karyawan' => 0, 'promo' => 0, 'pesanan' => 0, 'ulasan' => 0];
@@ -98,8 +76,7 @@ class ImporModel extends Model
         try {
             $this->db->beginTransaction();
 
-            // ----- 1. users -----
-            $idUser = []; // username => id
+            $idUser = []; 
             foreach ($this->bacaTxt('users.txt', 4) as $k) {
                 $username = normalUser($k[0]);
                 $ada = $this->sudahAda("SELECT id FROM users WHERE username = :u", ['u' => $username]);
@@ -107,7 +84,6 @@ class ImporModel extends Model
                     $idUser[$username] = $ada['id'];
                     continue;
                 }
-                // kalau password lama masih teks biasa, di-hash dulu
                 $password = $k[1];
                 if (substr($password, 0, 4) != '$2y$') {
                     $password = password_hash($password, PASSWORD_DEFAULT);
@@ -120,7 +96,6 @@ class ImporModel extends Model
                 $jumlah['users']++;
             }
 
-            // ----- 2. layanan (dicocokin dari nama) -----
             foreach ($this->bacaTxt('layanan.txt', 4) as $k) {
                 if ($this->sudahAda("SELECT id FROM layanan WHERE nama = :n", ['n' => $k[1]])) {
                     continue;
@@ -134,7 +109,6 @@ class ImporModel extends Model
                 $layananByNama[$l['nama']] = $l['id'];
             }
 
-            // ----- 3. karyawan -----
             foreach ($this->bacaTxt('karyawan.txt', 4) as $k) {
                 if ($this->sudahAda("SELECT id FROM karyawan WHERE nama = :n AND no_hp = :h", ['n' => $k[1], 'h' => $k[3]])) {
                     continue;
@@ -144,7 +118,6 @@ class ImporModel extends Model
                 $jumlah['karyawan']++;
             }
 
-            // ----- 4. promo (dicocokin dari judul) -----
             foreach ($this->bacaTxt('promo.txt', 6) as $k) {
                 if ($this->sudahAda("SELECT id FROM promo WHERE judul = :j", ['j' => $k[1]])) {
                     continue;
@@ -164,8 +137,7 @@ class ImporModel extends Model
                 $promoByJudul[$p['judul']] = $p['id'];
             }
 
-            // ----- 5. pesanan (orders.txt) -----
-            $idPesanan = []; // kode lama => id baru
+            $idPesanan = []; 
             foreach ($this->bacaTxt('orders.txt', 11) as $k) {
                 $kode = $k[0];
                 $ada = $this->sudahAda("SELECT id FROM pesanan WHERE kode = :k", ['k' => $kode]);
@@ -189,7 +161,7 @@ class ImporModel extends Model
                     'kode'    => substr($kode, 0, 20),
                     'uid'     => $userId,
                     'np'      => $k[1],
-                    'sumber'  => $userId ? 'aplikasi' : 'kios', // username terdaftar = pesan lewat aplikasi
+                    'sumber'  => $userId ? 'aplikasi' : 'kios', 
                     'lid'     => isset($layananByNama[$k[2]]) ? $layananByNama[$k[2]] : null,
                     'nl'      => $k[2],
                     'harga'   => max(0, (int)$k[3]),
@@ -206,10 +178,9 @@ class ImporModel extends Model
                 $jumlah['pesanan']++;
             }
 
-            // ----- 6. ulasan -----
             foreach ($this->bacaTxt('ulasan.txt', 3) as $k) {
                 if (!isset($idPesanan[$k[0]])) {
-                    continue; // pesanannya nggak ada, lewatin
+                    continue; 
                 }
                 if ($this->sudahAda("SELECT id FROM ulasan WHERE pesanan_id = :p", ['p' => $idPesanan[$k[0]]])) {
                     continue;
@@ -219,13 +190,13 @@ class ImporModel extends Model
                 $jumlah['ulasan']++;
             }
 
-            $this->db->commit(); // semua lancar -> simpan
+            $this->db->commit(); 
             return $jumlah;
         } catch (Exception $e) {
             if ($this->db->inTransaction()) {
-                $this->db->rollBack(); // ada yang gagal -> batalin SEMUA
+                $this->db->rollBack(); 
             }
-            throw $e; // dilempar ke controller biar bisa ditampilin pesan errornya
+            throw $e; 
         }
     }
 }

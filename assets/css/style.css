@@ -1,29 +1,18 @@
-/* ============================================================
-   style.css  ->  tampilan semua halaman setelah login
-
-   Konsep: "DENIM & TIKET CUCIAN"
-   - Sidebar kayak kain denim: biru tua, ada tekstur serat miring,
-     dan garis jahitan benang kuning (kayak jahitan celana jeans)
-   - Latar halaman kayak kain linen putih: ada anyaman tipis banget
-   - Biru GO (sama kayak logo) buat tombol utama
-   - Kuning label KHUSUS buat promo, kayak label harga di baju
-   - Ciri khas kedua: TIKET CUCIAN di dashboard pelanggan
-   ============================================================ */
 :root {
-  --denim: #14284b;         /* sidebar & teks judul */
-  --denim-terang: #1f3a68;  /* menu aktif ("kantong" denim) */
-  --benang: #e8b04a;        /* warna benang jahitan */
-  --laut: #14284b;          /* teks utama */
-  --biru: #2458e6;          /* tombol utama (sama kayak logo) */
+  --denim: #14284b;         
+  --denim-terang: #1f3a68; 
+  --benang: #e8b04a;  
+  --laut: #14284b;      
+  --biru: #2458e6;       
   --biru-tua: #1b45c4;
-  --sabun: #e4ecff;         /* biru muda buat ikon, chip, hover */
-  --busa: #f3f6fa;          /* latar halaman (linen) */
-  --uap: #dce4f0;           /* garis & border */
-  --abu: #5d6b85;           /* teks pendukung */
+  --sabun: #e4ecff;       
+  --busa: #f3f6fa;      
+  --uap: #dce4f0;     
+  --abu: #5d6b85;           
   --hijau: #12805c;
   --hijau-muda: #def5ea;
-  --karang: #d83a45;        /* hapus / error */
-  --label: #ffd84d;         /* kuning label, khusus promo */
+  --karang: #d83a45;      
+  --label: #ffd84d;        
   --label-muda: #fff6d2;
   --label-tua: #6b4a00;
   --lebar-sidebar: 264px;
@@ -37,7 +26,6 @@ body {
   font-family: var(--f-isi);
   color: var(--laut); font-size: 15.5px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  /* anyaman kain linen: garis horizontal + vertikal tipis banget */
   background-color: var(--busa);
   background-image:
     repeating-linear-gradient(0deg, rgba(20, 40, 75, .025) 0 1px, transparent 1px 4px),
@@ -48,26 +36,20 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
 :focus-visible { outline: 3px solid rgba(36, 88, 230, .4); outline-offset: 2px; }
 .sr-saja { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- Layout ---------- */
 .app { display: flex; min-height: 100vh; }
 .main { margin-left: var(--lebar-sidebar); flex: 1; min-width: 0; }
 .content { padding: 0 44px 64px; max-width: 1240px; }
 
-/* ============================================================
-   SIDEBAR DENIM
-   ============================================================ */
 .sidebar {
   position: fixed; inset: 0 auto 0 0; width: var(--lebar-sidebar); z-index: 40;
   padding: 28px 18px 22px; display: flex; flex-direction: column;
   color: #c9d6ee;
-  /* serat denim: garis miring tipis di atas warna biru tua */
   background-color: var(--denim);
   background-image:
     repeating-linear-gradient(135deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 6px),
     linear-gradient(180deg, #17305a 0%, var(--denim) 60%);
   transition: transform .3s;
 }
-/* garis jahitan benang kuning di pinggir kanan sidebar */
 .sidebar::after {
   content: ''; position: absolute; top: 14px; bottom: 14px; right: 9px;
   border-right: 2px dashed var(--benang); opacity: .55; pointer-events: none;
@@ -84,7 +66,6 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
   transition: background .2s, color .2s;
 }
 .menu a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
-/* menu aktif = "kantong" denim yang dijahit */
 .menu a.aktif {
   background: var(--denim-terang); color: #fff;
   border-color: rgba(232, 176, 74, .7);
@@ -109,7 +90,6 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
 .overlay { display: none; position: fixed; inset: 0; background: rgba(20, 40, 75, .5); z-index: 30; }
 .overlay.tampil { display: block; }
 
-/* ---------- Topbar ---------- */
 .topbar { display: flex; align-items: flex-end; gap: 16px; padding: 38px 44px 24px; }
 .topbar .judul { flex: 1; min-width: 0; }
 .topbar h1 { font-size: 34px; font-weight: 800; letter-spacing: -.035em; color: var(--denim); }
@@ -123,13 +103,11 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
   cursor: pointer; color: #fff; align-items: center; justify-content: center; flex-shrink: 0;
 }
 
-/* ---------- Sapaan di dashboard ---------- */
 .sapaan { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin: 4px 0 24px; }
 .sapaan h2 { font-size: 28px; font-weight: 700; }
 .sapaan p { color: var(--abu); margin-top: 3px; max-width: 520px; }
 .sapaan p strong { color: var(--laut); }
 
-/* ---------- Panel (card) ---------- */
 .card { background: #fff; border-radius: 20px; padding: 26px 28px; margin-bottom: 22px; border: 1px solid var(--uap); }
 .card.sorot { border-top: 4px solid var(--biru); }
 .card h3 { font-size: 19px; font-weight: 700; }
@@ -151,7 +129,6 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
 .dua-kolom { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; gap: 22px; align-items: start; }
 .dua-kolom > .card:first-child { position: sticky; top: 20px; }
 
-/* ---------- Dua jalur pesanan (dashboard admin) ---------- */
 .dua-jalur { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
 .jalur {
   display: flex; align-items: center; gap: 16px; padding: 20px 22px; border-radius: 22px;
@@ -166,7 +143,6 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
 .jalur-angka { font-family: var(--f-judul); font-size: 34px; font-weight: 800; color: var(--biru); line-height: 1; }
 .jalur-angka.plus { width: 40px; height: 40px; border-radius: 50%; background: var(--laut); color: #fff; display: flex; align-items: center; justify-content: center; }
 
-/* ---------- Statistik ---------- */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
 .stat-grid.dua { grid-template-columns: repeat(2, 1fr); }
 .stat-card { background: #fff; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--uap); }
@@ -178,7 +154,6 @@ h1, h2, h3, h4 { font-family: var(--f-judul); letter-spacing: -.01em; line-heigh
 .stat-label { display: block; color: var(--abu); font-size: 14px; }
 .stat-value { display: block; font-family: var(--f-judul); font-size: 25px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
 
-/* ---------- Tabel ---------- */
 .tabel-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 15px; }
 th { text-align: left; padding: 10px 12px; font-size: 13.5px; font-weight: 700; color: var(--abu); background: var(--busa); white-space: nowrap; }
@@ -196,14 +171,12 @@ td.uang strong { display: block; font-family: var(--f-judul); font-weight: 700; 
 .kode { font-weight: 700; font-size: 14px; letter-spacing: .01em; }
 .chip { background: var(--sabun); color: var(--biru-tua); padding: 2px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600; white-space: nowrap; }
 
-/* penanda kecil di tabel & kartu */
 .tag-promo { display: inline-block; margin-top: 3px; padding: 1px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: var(--label); color: var(--label-tua); }
 .tag-tunggu { display: inline-block; padding: 1px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: #eef1f6; color: var(--abu); }
 .asal { display: inline-flex; align-items: center; padding: 1px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; border: 1px solid var(--uap); color: var(--abu); }
 .asal-aplikasi { color: var(--biru-tua); border-color: #c4d7fa; background: #f3f8ff; }
 .asal-kios { color: var(--label-tua); border-color: #f0dd8f; background: #fffbe8; }
 
-/* ---------- Status pesanan ---------- */
 .badge { display: inline-flex; align-items: center; gap: 7px; padding: 3px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 700; white-space: nowrap; }
 .badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .badge-menunggu-jemput { background: #eef1f6; color: #4c5b78; }
@@ -218,7 +191,6 @@ td.uang strong { display: block; font-family: var(--f-judul); font-weight: 700; 
 .select-status.status-selesai { background: var(--hijau-muda); color: var(--hijau); }
 .select-status.status-diambil { background: #ebe6fb; color: #5c3fc4; }
 
-/* filter chip di riwayat transaksi */
 .filter-chip { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 16px; }
 .filter-chip button {
   display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--uap); background: #fff; color: var(--abu);
@@ -228,7 +200,6 @@ td.uang strong { display: block; font-family: var(--f-judul); font-weight: 700; 
 .filter-chip button.aktif { background: var(--denim); border-color: var(--denim); color: #fff; }
 .titik-angka { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--label); color: var(--label-tua); font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
 
-/* ---------- Form ---------- */
 .form { display: flex; flex-direction: column; gap: 17px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 14.5px; font-weight: 600; }
@@ -255,12 +226,10 @@ input.cari, input[type=search] { max-width: 250px; padding: 9px 16px; border-rad
 .preview-foto img { width: 100%; max-height: 170px; object-fit: cover; border-radius: 14px; display: block; margin-bottom: 4px; }
 .preview-foto small { color: var(--abu); }
 
-/* kolom angka dengan satuan di kanan (isi berat) */
 .input-satuan { position: relative; }
 .input-satuan input { padding-right: 46px; font-family: var(--f-judul); font-size: 18px; font-weight: 700; }
 .input-satuan span { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--abu); font-weight: 600; font-size: 14px; }
 
-/* ---------- Tombol ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 22px; border-radius: 999px;
   font: inherit; font-size: 15px; font-weight: 700; border: 1.5px solid transparent; cursor: pointer;
@@ -280,7 +249,6 @@ input.cari, input[type=search] { max-width: 250px; padding: 9px 16px; border-rad
 .btn-promo:hover { background: #ffcd1f; }
 form.inline { display: inline; }
 
-/* ---------- Pesan ---------- */
 .alert { padding: 13px 18px; border-radius: 14px; font-size: 15px; font-weight: 600; margin-bottom: 20px; border-left: 4px solid; transition: opacity .4s; }
 .card .alert { margin-bottom: 16px; }
 .alert-error { background: #fdeceb; color: #a82a33; border-color: var(--karang); }
@@ -293,9 +261,6 @@ form.inline { display: inline; }
 .toast-error { background: #a82a33; }
 .toast-sukses { background: var(--hijau); }
 
-/* ============================================================
-   TIKET CUCIAN (ciri khas): pesanan aktif di dashboard pelanggan
-   ============================================================ */
 .tiket {
   --lebar-sobekan: 330px; --lubang: 14px;
   display: grid; grid-template-columns: 1fr var(--lebar-sobekan);
@@ -326,7 +291,6 @@ form.inline { display: inline; }
 .belum-timbang strong { color: var(--laut); font-size: 17px; }
 .belum-timbang .muted { margin-bottom: 6px; }
 
-/* langkah status pesanan: garis penuh mengalir sekali saat halaman dibuka */
 .steps { display: flex; margin: 22px 0 4px; }
 .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; text-align: center; color: #93a1ba; min-width: 0; }
 .step::before { content: ''; position: absolute; top: 19px; left: -50%; width: 100%; height: 3px; background: var(--uap); z-index: 0; }
@@ -341,7 +305,6 @@ form.inline { display: inline; }
 .step.sekarang .step-lingkaran { background: #fff; border-color: var(--biru); color: var(--biru); box-shadow: 0 0 0 5px rgba(36, 88, 230, .15); }
 @keyframes isi-garis { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-/* ---------- Promo ---------- */
 .grid-promo { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; margin-bottom: 26px; }
 .kartu-promo { background: #fff; border-radius: 22px; overflow: hidden; border: 1px solid var(--uap); display: flex; flex-direction: column; transition: border-color .2s; }
 .kartu-promo:hover { border-color: #e9c74a; }
@@ -356,7 +319,6 @@ form.inline { display: inline; }
 .promo-tanggal { color: var(--label-tua); font-weight: 600; margin-bottom: 8px; }
 .promo-isi .aksi { justify-content: flex-start; }
 
-/* ---------- Halaman Buat Pesanan ---------- */
 .order-grid { display: grid; grid-template-columns: 1fr 350px; gap: 22px; align-items: start; margin-bottom: 8px; }
 .langkah h3 { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .nomor { width: 30px; height: 30px; border-radius: 50%; background: var(--laut); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--f-judul); font-size: 15px; font-weight: 700; flex-shrink: 0; }
@@ -388,7 +350,6 @@ form.inline { display: inline; }
 .opsi input:checked + .isi-promo { border-color: #e2b900; background: #fffdf2; }
 .opsi input:checked + .isi-promo::after { background: var(--label); color: var(--label-tua); }
 
-/* ringkasan pesanan: bentuknya tiket kecil juga */
 .ringkasan { position: sticky; top: 20px; background: #fff; border-radius: 26px; padding: 26px; border: 1px solid var(--uap); border-top: 4px solid var(--biru); }
 .ringkasan h3 { font-size: 19px; font-weight: 700; margin-bottom: 12px; }
 .ringkasan dl > div { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; font-size: 15px; }
@@ -403,7 +364,6 @@ form.inline { display: inline; }
 .catatan-kecil { color: var(--abu); font-size: 13.5px; margin-bottom: 18px; }
 .ringkasan .btn + .btn { margin-top: 10px; }
 
-/* ---------- Jemputan di dashboard admin ---------- */
 .daftar-jemput { display: flex; flex-direction: column; gap: 12px; }
 .item-jemput { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 20px; border: 1.5px dashed #c9d7ee; border-radius: 20px; background: #fbfdff; }
 .item-info { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -415,7 +375,6 @@ form.inline { display: inline; }
 .item-berat { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .item-berat .input-satuan { width: 150px; }
 
-/* ---------- Ulasan ---------- */
 .bintang { color: #f2a30f; font-size: 16px; letter-spacing: 1px; }
 .bintang span { color: #e3e9f3; }
 .komentar { font-size: 14px; color: var(--abu); max-width: 240px; }
@@ -425,12 +384,10 @@ form.inline { display: inline; }
 .bintang-input label:hover { transform: scale(1.12); }
 .bintang-input input:checked ~ label, .bintang-input label:hover, .bintang-input label:hover ~ label { color: #f2a30f; }
 
-/* ---------- Profil ---------- */
 .profil-card { max-width: 640px; }
 .profil-atas { display: flex; align-items: center; gap: 18px; padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--uap); }
 .profil-atas h3 { font-size: 22px; }
 
-/* ---------- Nota ---------- */
 body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16px; }
 .nota-wrapper { max-width: 640px; margin: 0 auto; }
 .nota-aksi { display: flex; justify-content: space-between; margin-bottom: 18px; }
@@ -456,7 +413,6 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
   .nota-total { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
-/* ---------- Responsif ---------- */
 @media (max-width: 1100px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .dua-kolom { grid-template-columns: 1fr; }
@@ -465,7 +421,6 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
   .ringkasan { position: static; }
 }
 @media (max-width: 900px) {
-  /* tiket jadi bertumpuk: lubang sobekan pindah ke sisi kiri-kanan garis putus-putus */
   .tiket { grid-template-columns: 1fr; -webkit-mask: none; mask: none; }
   .tiket-sobekan { border-left: 0; border-top: 2px dashed var(--uap); border-radius: 0 0 26px 26px; }
   .item-jemput { flex-direction: column; align-items: stretch; }
@@ -482,10 +437,9 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
   .tanggal { display: none; }
   .content { padding: 0 18px 44px; }
   .dua-jalur { grid-template-columns: 1fr; }
-  td, th { white-space: nowrap; } /* di HP tabel digeser ke samping, angka tidak pecah baris */
+  td, th { white-space: nowrap; }
 }
 @media (max-width: 640px) {
-  /* langkah status jadi daftar vertikal supaya 5 langkah tetap terbaca */
   .steps { flex-direction: column; gap: 4px; margin-top: 16px; }
   .step { flex-direction: row; align-items: center; text-align: left; gap: 14px; padding: 6px 0; }
   .step::before { display: none; }
@@ -503,7 +457,6 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
   * { transition: none !important; animation: none !important; }
 }
 
-/* tabel lebar (Transaksi): jangan menumpuk, geser ke samping kalau sempit */
 .tabel-wrap td, .tabel-wrap th { white-space: nowrap; }
 .tabel-wrap td.aksi .btn, .tabel-wrap td.aksi form.inline { display: inline-flex; }
 .tabel-wrap table { font-size: 14px; }
@@ -512,24 +465,20 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
 .ikon-fa { line-height: 1; }
 .logo-img { display: block; object-fit: contain; flex-shrink: 0; }
 
-/* ---------- tambahan versi database (Supabase) ---------- */
 .card-kepala .aksi { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .zona-bahaya { border-color: #f3c9cc; }
 .zona-bahaya h3 { color: var(--karang); display: flex; align-items: center; gap: 8px; }
 td.nowrap { white-space: nowrap; }
 
-/* ---------- sentuhan denim di beberapa elemen ---------- */
 .sapaan h2 { font-size: 30px; font-weight: 800; letter-spacing: -.03em; color: var(--denim); }
 .stat-value { font-size: 27px; font-weight: 800; color: var(--denim); }
 .jalur-angka.plus, .nomor { background: var(--denim); }
 
-/* tiket cucian: ada lubang gantungan + tali kecil di pojok kiri atas */
 .tiket-utama { position: relative; }
 .tiket-utama::before {
   content: ''; position: absolute; top: 18px; left: 18px; width: 14px; height: 14px; border-radius: 50%;
   background: var(--busa); box-shadow: inset 0 0 0 2px var(--uap); z-index: 1;
 }
-/* tali benang dari lubang ke pinggir atas tiket */
 .tiket-utama::after {
   content: ''; position: absolute; top: -9px; left: 23.5px; width: 3px; height: 34px; border-radius: 3px;
   background: var(--benang); transform: rotate(-30deg); transform-origin: bottom center;

@@ -1,8 +1,4 @@
--- ============================================================
--- mysql.sql  -  Skema yang SAMA untuk MySQL/MariaDB di XAMPP (cadangan)
--- Dipakai kalau DB_DRIVER di app/config/database.php = 'mysql'.
--- phpMyAdmin > tab SQL > tempel > Go   (atau menu Import).
--- ============================================================
+
 CREATE DATABASE IF NOT EXISTS golaundry CHARACTER SET utf8mb4;
 USE golaundry;
 
@@ -72,7 +68,6 @@ CREATE TABLE IF NOT EXISTS ulasan (
   CONSTRAINT fk_ulasan_pesanan FOREIGN KEY (pesanan_id) REFERENCES pesanan(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Akun contoh: admin@golaundry.com / admin123, pelanggan@golaundry.com / pelanggan123
 INSERT IGNORE INTO users (username, password, nama, role) VALUES
   ('admin@golaundry.com',     '$2y$10$RJecGaePKNPLTeIcFjmkCeUq2YZT6G3zVi8rxrmP2zkxzM2wkzgjm', 'Admin GoLaundry',     'admin'),
   ('pelanggan@golaundry.com', '$2y$10$1vDYJu6UKrQcheuX0GHE8eks/bR0ZZqQjwtMsRjmOfOFOR/hnB1a.', 'Pelanggan GoLaundry', 'customer');

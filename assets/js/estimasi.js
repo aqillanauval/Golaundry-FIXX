@@ -1,12 +1,8 @@
-// ============================================================
-// estimasi.js  -  Perkiraan total di form transaksi admin.
-// Ikut menghitung diskon kalau admin memilih promo.
-// Saat edit transaksi, diskon lama dibaca dari atribut data-diskon-tetap.
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const pilihLayanan = document.getElementById('layanan');
   const inputQty = document.getElementById('qty');
-  const pilihPromo = document.getElementById('promo');   // tidak ada saat mode edit
+  const pilihPromo = document.getElementById('promo');  
   const tempatHasil = document.getElementById('estimasi');
 
   if (!pilihLayanan || !inputQty || !tempatHasil) return;
@@ -29,5 +25,5 @@ document.addEventListener('DOMContentLoaded', function () {
   pilihLayanan.addEventListener('change', hitung);
   inputQty.addEventListener('input', hitung);
   if (pilihPromo) pilihPromo.addEventListener('change', hitung);
-  hitung(); // hitung sekali saat halaman dibuka (berguna saat mode edit)
+  hitung(); 
 });

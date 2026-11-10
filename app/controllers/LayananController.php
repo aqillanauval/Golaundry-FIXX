@@ -1,12 +1,4 @@
 <?php
-// ============================================================
-// LayananController.php  ->  halaman CRUD Layanan (khusus admin)
-//   Create : isi form "Tambah Layanan"
-//   Read   : tabel daftar layanan
-//   Update : klik Edit (layanan.php?edit=ID) -> form keisi -> Simpan
-//   Delete : tombol Hapus
-// ============================================================
-
 class LayananController extends Controller
 {
     private $model;
@@ -23,7 +15,6 @@ class LayananController extends Controller
         $error = '';
         $form = ['id' => '', 'nama' => '', 'harga' => '', 'satuan' => 'kg']; // form kosong = mode tambah
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $form['id'] = $this->post('id');
             $form['nama'] = bersihkan($this->post('nama'), 100);
@@ -45,7 +36,6 @@ class LayananController extends Controller
             }
         }
 
-        // ----- DELETE -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $layanan = $this->model->cari($this->post('id'));
             if ($layanan) {
@@ -56,7 +46,6 @@ class LayananController extends Controller
             $this->pindahKe('layanan.php');
         }
 
-        // ----- mode edit: isi form pakai data yang dipilih -----
         if ($this->get('edit') != '' && $error == '') {
             $dipilih = $this->model->cari($this->get('edit'));
             if ($dipilih) {

@@ -1,6 +1,4 @@
-// ============================================================
-// promo.js  -  Pratinjau foto sebelum diunggah + cek ukuran file
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const inputFoto = document.getElementById('foto');
   const kotakPreview = document.getElementById('previewFoto');
@@ -12,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const file = inputFoto.files[0];
     if (!file) return;
 
-    // cek cepat di browser (server tetap akan mengecek ulang)
     if (file.size > 2 * 1024 * 1024) {
       tampilToast('Ukuran foto melebihi 2 MB.', 'error');
       inputFoto.value = '';

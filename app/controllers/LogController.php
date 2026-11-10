@@ -1,7 +1,4 @@
 <?php
-// LogController.php  ->  halaman "Log Aktivitas" (khusus admin)
-// Datanya dibaca dari file storage/logs/aktivitas.log (lihat app/log.php)
-
 class LogController extends Controller
 {
     public function invoke()

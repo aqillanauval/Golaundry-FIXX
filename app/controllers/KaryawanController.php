@@ -1,5 +1,4 @@
 <?php
-// KaryawanController.php  ->  halaman CRUD Karyawan (khusus admin)
 
 class KaryawanController extends Controller
 {
@@ -17,7 +16,6 @@ class KaryawanController extends Controller
         $error = '';
         $form = ['id' => '', 'nama' => '', 'jabatan' => '', 'no_hp' => ''];
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
             $form['id'] = $this->post('id');
             $form['nama'] = bersihkan($this->post('nama'), 100);
@@ -42,7 +40,6 @@ class KaryawanController extends Controller
             }
         }
 
-        // ----- DELETE -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $karyawan = $this->model->cari($this->post('id'));
             if ($karyawan) {

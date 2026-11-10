@@ -1,10 +1,4 @@
 <?php
-// ============================================================
-// PromoModel.php  ->  CRUD tabel promo + urusan file foto promo
-// Data promo disimpan di database, tapi file fotonya tetap di folder
-// uploads/promo/ (yang disimpan di database cuma nama filenya).
-// ============================================================
-
 class PromoModel extends Model
 {
     protected $tabel = 'promo';
@@ -15,7 +9,6 @@ class PromoModel extends Model
         return $stmt->fetchAll();
     }
 
-    // promo yang masih berlaku hari ini
     public function aktif()
     {
         $stmt = $this->db->prepare("SELECT * FROM promo WHERE berlaku_sampai >= :hari_ini ORDER BY berlaku_sampai");
@@ -23,7 +16,6 @@ class PromoModel extends Model
         return $stmt->fetchAll();
     }
 
-    // cari promo tapi cuma kalau masih berlaku (biar user nggak bisa pakai promo kadaluarsa)
     public function cariAktif($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM promo WHERE id = :id AND berlaku_sampai >= :hari_ini");
@@ -48,7 +40,6 @@ class PromoModel extends Model
         ]);
     }
 
-    // $fotoBaru = '' artinya fotonya nggak diganti
     public function ubah($id, $judul, $deskripsi, $diskon, $sampai, $fotoBaru)
     {
         $lama = $this->cari($id);
@@ -71,39 +62,35 @@ class PromoModel extends Model
             'sampai' => $sampai, 'foto' => $foto, 'id' => (int)$id,
         ]);
 
-        // foto lama dibuang kalau udah diganti foto baru
         if ($fotoBaru != '') {
             $this->hapusFoto($lama['foto']);
         }
     }
 
-    // hapus promo + file fotonya (method hapus() punya Model "ditimpa"/override di sini)
     public function hapus($id)
     {
         $promo = $this->cari($id);
         if (!$promo) {
             return false;
         }
-        parent::hapus($id);              // jalanin hapus() punya class induk (Model)
-        $this->hapusFoto($promo['foto']); // terus hapus file fotonya
+        parent::hapus($id);            
+        $this->hapusFoto($promo['foto']); 
         return true;
     }
 
-    // ---------- urusan file foto ----------
 
     public function hapusFoto($namaFile)
     {
-        $namaFile = basename($namaFile); // jaga-jaga biar nggak bisa ngehapus file di folder lain
+        $namaFile = basename($namaFile); 
         if ($namaFile != '' && file_exists(FOLDER_UPLOAD . $namaFile)) {
             unlink(FOLDER_UPLOAD . $namaFile);
         }
     }
 
-    // proses upload foto. Hasilnya ['nama' => namafile] atau ['error' => pesan]
     public function uploadFoto($berkas)
     {
         $ekstensiBoleh = ['jpg', 'jpeg', 'png'];
-        $ukuranMaks = 2 * 1024 * 1024; // 2 MB
+        $ukuranMaks = 2 * 1024 * 1024; 
         $ekstensi = strtolower(pathinfo($berkas['name'], PATHINFO_EXTENSION));
 
         if ($berkas['error'] != UPLOAD_ERR_OK) {
@@ -122,7 +109,7 @@ class PromoModel extends Model
         if (!file_exists(FOLDER_UPLOAD)) {
             mkdir(FOLDER_UPLOAD, 0775, true);
         }
-        $namaBaru = uniqid('promo_') . '.' . $ekstensi; // nama acak biar nggak bentrok
+        $namaBaru = uniqid('promo_') . '.' . $ekstensi; 
         if (!move_uploaded_file($berkas['tmp_name'], FOLDER_UPLOAD . $namaBaru)) {
             return ['error' => 'Foto gagal disimpan di server.'];
         }

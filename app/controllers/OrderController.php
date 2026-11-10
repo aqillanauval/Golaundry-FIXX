@@ -1,14 +1,4 @@
 <?php
-// ============================================================
-// OrderController.php  ->  pelanggan bikin / edit / batalin pesanan (+ pakai promo)
-//
-// ALUR:
-//   pelanggan pilih layanan + isi alamat (berat belum tau, jadi 0)
-//   -> status "Menunggu Jemput" -> kurir nimbang -> status "Diterima"
-// Edit & batal cuma boleh selama status masih "Menunggu Jemput".
-// Besar diskon SELALU diambil dari database, bukan dari browser (biar nggak bisa dicurangin).
-// ============================================================
-
 class OrderController extends Controller
 {
     private $pesananModel;
@@ -28,10 +18,9 @@ class OrderController extends Controller
         $error = '';
         $form = ['id' => '', 'layanan' => '', 'catatan' => '', 'promo' => ''];
 
-        // ----- CREATE & UPDATE -----
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
-            $form['id'] = $this->post('id');           // kode pesanan (kosong = pesanan baru)
-            $form['layanan'] = $this->post('layanan');  // id layanan
+            $form['id'] = $this->post('id');           
+            $form['layanan'] = $this->post('layanan');  
             $form['catatan'] = bersihkan($this->post('catatan'), 500);
             $form['promo'] = $this->post('promo');      // '' / 'lama' / id promo
 
@@ -40,11 +29,10 @@ class OrderController extends Controller
                 $layanan = $this->layananModel->cari($form['layanan']);
             }
 
-            // cek promo yang dipilih
             $promo = null;
             $errorPromo = '';
             if ($form['promo'] == 'lama') {
-                $promo = 'lama'; // tetap pakai promo yang udah nempel di pesanan ini
+                $promo = 'lama'; 
                 if ($form['id'] == '') {
                     $errorPromo = 'Promo nggak valid.';
                 }
@@ -86,7 +74,6 @@ class OrderController extends Controller
             }
         }
 
-        // ----- DELETE (batalin pesanan) -----
         if ($this->adaPost() && $this->post('aksi') == 'hapus') {
             $kode = $this->post('id');
             if ($this->pesananModel->batalkan($kode, $saya->getId())) {
@@ -100,7 +87,6 @@ class OrderController extends Controller
 
         $promoAktif = $this->promoModel->aktif();
 
-        // ----- mode edit: order.php?edit=KODE -----
         if ($this->get('edit') != '' && $error == '') {
             $p = $this->pesananModel->cariMilikUser($this->get('edit'), $saya->getId());
             if ($p && $p->menungguJemput()) {
@@ -108,7 +94,6 @@ class OrderController extends Controller
 
                 if ($p->punyaDiskon()) {
                     $form['promo'] = 'lama';
-                    // kalau promonya masih aktif, langsung pilih promo itu
                     foreach ($promoAktif as $promo) {
                         if ($promo['id'] == $p->promo_id && $promo['diskon'] == $p->diskon) {
                             $form['promo'] = (string)$promo['id'];
@@ -118,14 +103,12 @@ class OrderController extends Controller
             }
         }
 
-        // dari tombol "Pakai promo ini" di dashboard: order.php?promo=ID
         if ($form['id'] == '' && $form['promo'] == '' && $this->get('promo') != '') {
             if ($this->promoModel->cariAktif($this->get('promo'))) {
                 $form['promo'] = $this->get('promo');
             }
         }
 
-        // pilihan "promo dari pesanan ini" (promo lama yang mungkin udah nggak aktif)
         $promoLama = null;
         if ($form['promo'] == 'lama' && $form['id'] != '') {
             $p = $this->pesananModel->cariMilikUser($form['id'], $saya->getId());

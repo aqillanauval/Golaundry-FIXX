@@ -1,10 +1,4 @@
 <?php
-// ============================================================
-// DashboardCustomerController.php
-// Nampilin "tiket" pesanan yang lagi jalan, promo yang bisa dipakai,
-// sama 3 transaksi terakhir pelanggan yang login.
-// ============================================================
-
 class DashboardCustomerController extends Controller
 {
     public function invoke()
@@ -15,7 +9,6 @@ class DashboardCustomerController extends Controller
 
         $pesananSaya = $pesananModel->milikUser($saya->getId());
 
-        // cari pesanan terbaru yang belum Selesai / Diambil
         $aktif = null;
         foreach ($pesananSaya as $p) {
             if (!$p->sudahSelesai()) {
@@ -24,7 +17,6 @@ class DashboardCustomerController extends Controller
             }
         }
 
-        // posisi langkah sekarang (0 = Menunggu Jemput, 1 = Diterima, dst)
         $langkahSekarang = -1;
         if ($aktif) {
             $langkahSekarang = array_search($aktif->status, Pesanan::DAFTAR_STATUS);

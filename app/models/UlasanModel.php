@@ -1,6 +1,4 @@
 <?php
-// UlasanModel.php  ->  CRUD tabel ulasan (1 pesanan maksimal 1 ulasan)
-
 class UlasanModel extends Model
 {
     protected $tabel = 'ulasan';
@@ -16,8 +14,6 @@ class UlasanModel extends Model
         }
         return $data;
     }
-
-    // kalau belum ada ulasan -> INSERT, kalau udah ada -> UPDATE
     public function simpan($pesananId, $rating, $komentar)
     {
         if ($this->cariByPesanan($pesananId)) {
