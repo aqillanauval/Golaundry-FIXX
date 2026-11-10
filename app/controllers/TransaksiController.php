@@ -1,12 +1,4 @@
 <?php
-// ============================================================
-// TransaksiController.php  ->  CRUD Transaksi (khusus admin)
-//   1. Catat pelanggan yang dateng langsung ke kios (berat langsung diisi)
-//   2. Liat, cari, edit, hapus semua transaksi
-//      (pesanan aplikasi yang belum ditimbang juga bisa diisi beratnya di sini)
-// Fitur cari (transaksi.php?cari=...) pakai LIKE + prepared statement.
-// ============================================================
-
 class TransaksiController extends Controller
 {
     private $pesananModel;
@@ -126,7 +118,7 @@ class TransaksiController extends Controller
             }
         }
 
-        // data pesanan yang lagi diedit (buat info promo & mode "isi berat")
+        // data pesanan yang lagi diedit
         $diedit = null;
         if ($form['id'] != '') {
             $diedit = $this->pesananModel->cariByKode($form['id']);
