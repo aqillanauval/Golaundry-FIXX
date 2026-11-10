@@ -19,14 +19,14 @@ function catatLog($aksi, $detail = '', $pelaku = null)
            . str_replace($bersihin, ' ', $aksi) . '|'
            . str_replace($bersihin, ' ', $detail) . "\n";
 
-    $file = @fopen(fileLog(), 'a'); // mode 'a' = nambah di akhir, isi lama tetap ada
+    $file = @fopen(fileLog(), 'a'); 
     if (!$file) {
         error_log('File log nggak bisa dibuka: ' . fileLog());
         return;
     }
     if (flock($file, LOCK_EX)) {
         fwrite($file, $baris);
-        flock($file, LOCK_UN); // buka kuncinya lagi
+        flock($file, LOCK_UN);
     }
     fclose($file);
 }
