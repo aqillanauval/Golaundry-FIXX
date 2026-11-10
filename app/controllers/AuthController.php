@@ -62,24 +62,25 @@ class AuthController extends Controller
                     $_SESSION['user'] = $pengguna->getUsername();
                     $_SESSION['nama'] = $pengguna->getNama();
                     $_SESSION['role'] = $pengguna->getRole();
-<<<<<<< HEAD
-                    unset($_SESSION['token']); 
-                    if ($ingat) {
-                        setcookie('ingat_user', $username, time() + (60 * 60 * 24 * 30), '/');
-                    } else {
-                        setcookie('ingat_user', '', time() - 3600, '/'); // hapus cookie
-                    }
-=======
-                    unset($_SESSION['token']); // token form dibikin baru
+                    unset($_SESSION['token']);
 
-                    // "Ingat saya" -> simpan username di COOKIE 30 hari
-                    setcookie('ingat_user', $username, [
-                    'expires'  => time() + (60 * 60 * 24 * 30),
-                    'path'     => '/',
-                    'httponly' => true,
-                    'samesite' => 'Lax',
-                ]);
->>>>>>> 22a935c (update fitur)
+                    // Ingat saya: simpan username selama 30 hari
+                    if ($ingat) {
+                        setcookie('ingat_user', $username, [
+                            'expires' => time() + (60 * 60 * 24 * 30),
+                            'path' => '/',
+                            'httponly' => true,
+                            'samesite' => 'Lax',
+                        ]);
+                    } else {
+                        // Hapus cookie jika tidak memilih ingat saya
+                        setcookie('ingat_user', '', [
+                            'expires' => time() - 3600,
+                            'path' => '/',
+                            'httponly' => true,
+                            'samesite' => 'Lax',
+                        ]);
+                    }
 
                     catatLog('Login berhasil');
                     $this->pindahKe($pengguna->getHalamanDashboard());
