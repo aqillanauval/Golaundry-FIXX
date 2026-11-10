@@ -1,0 +1,8 @@
+# password database jangan sampai ke-upload ke GitHub
+app/config/database.php
+
+# file log & foto hasil upload (dibuat waktu aplikasi jalan)
+storage/logs/*.log
+uploads/promo/*
+!uploads/promo/.gitkeep
+!uploads/promo/.htaccess

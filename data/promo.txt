@@ -1,0 +1,2 @@
+PRM001,Diskon Mahasiswa,Tunjukkan KTM dan dapatkan potongan harga untuk semua layanan cuci kiloan.,15,2026-12-31,
+PRM002,Cuci Express Hemat,Butuh cepat? Layanan Cuci Express lebih hemat di akhir pekan.,10,2026-11-30,
