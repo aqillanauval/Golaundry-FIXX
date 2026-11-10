@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
       data.append('aksi', 'ubah_status');
       data.append('id', dropdown.dataset.id);
       data.append('status', dropdown.value);
+      // token CSRF dari <meta name="csrf-token"> di header, wajib untuk semua POST
+      const meta = document.querySelector('meta[name="csrf-token"]');
+      data.append('csrf', meta ? meta.content : '');
 
       fetch('dashboard-admin.php', {
         method: 'POST',

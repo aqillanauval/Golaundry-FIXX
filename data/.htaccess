@@ -1,5 +1,4 @@
-# Folder ini berisi data pengguna (termasuk password).
-# Tidak boleh dibuka langsung lewat browser.
+# Folder ini tidak boleh dibuka langsung lewat browser.
 <IfModule mod_authz_core.c>
   Require all denied
 </IfModule>

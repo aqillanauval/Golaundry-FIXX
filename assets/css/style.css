@@ -484,3 +484,9 @@ body.halaman-nota { background: var(--busa); min-height: 100vh; padding: 30px 16
 
 .ikon-fa { line-height: 1; }
 .logo-img { display: block; object-fit: contain; flex-shrink: 0; }
+
+/* ---------- tambahan versi database (Supabase) ---------- */
+.card-kepala .aksi { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.zona-bahaya { border-color: #f3c9cc; }
+.zona-bahaya h3 { color: var(--karang); display: flex; align-items: center; gap: 8px; }
+td.nowrap { white-space: nowrap; }
