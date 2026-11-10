@@ -1,16 +1,8 @@
 <?php
-// ============================================================
-// logout.php
-// Hapus SESSION (status login). Cookie "ingat saya" sengaja dibiarkan,
-// jadi email tetap terisi otomatis di halaman login kalau dicentang.
-// ============================================================
-session_start();
-$_SESSION = [];      // kosongkan data session
-session_destroy();   // hancurkan session di server
+// logout.php  -  FRONT CONTROLLER (bagian "C" di MVC)
+// Halaman ini hanya membuat objek controller lalu memanggil invoke().
+// Logika ada di app/controllers/AuthController.php, tampilan di app/views/.
+require_once __DIR__ . '/app/bootstrap.php';
 
-// mulai session baru yang kosong cuma untuk menampilkan pesan
-session_start();
-$_SESSION['flash'] = ['tipe' => 'sukses', 'pesan' => 'Kamu sudah keluar. Sampai jumpa lagi!'];
-
-header('Location: login.php');
-exit;
+$controller = new AuthController('logout');
+$controller->invoke();
