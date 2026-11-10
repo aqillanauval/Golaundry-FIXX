@@ -1,97 +1,217 @@
 <?php
-class Pesanan
+class PesananModel extends Model
 {
-    const DAFTAR_STATUS = ['Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'];
-    const STATUS_PROSES = ['Diterima', 'Dicuci', 'Selesai', 'Diambil'];
+    protected $tabel = 'pesanan';
 
-    public $id;
-    public $kode;            
-    public $user_id;
-    public $nama_pelanggan;
-    public $sumber;          
-    public $layanan_id;
-    public $nama_layanan;
-    public $harga;
-    public $satuan;
-    public $berat;       
-    public $catatan;      
-    public $status;
-    public $promo_id;
-    public $nama_promo;
-    public $diskon;       
-    public $tanggal;
+    // bagian SELECT yang sama untuk semua query baca
+    private $sqlDasar = "
+        SELECT p.*,
+               COALESCE(u.nama, p.nama_pelanggan) AS pelanggan,
+               ul.rating   AS ulasan_rating,
+               ul.komentar AS ulasan_komentar
+        FROM pesanan p
+        LEFT JOIN users  u  ON u.id = p.user_id
+        LEFT JOIN ulasan ul ON ul.pesanan_id = p.id";
 
-    public $pelanggan;     
-    public $ulasan_rating;
-    public $ulasan_komentar;
+    // ================= READ =================
 
-    public function subtotal()
+    public function semua($kataKunci = '')
     {
-        return (int)round($this->harga * $this->berat);
+        if ($kataKunci == '') {
+            $stmt = $this->db->query($this->sqlDasar . " ORDER BY p.tanggal DESC, p.id DESC");
+            return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
+        }
+
+        // pencarian AMAN: LIKE + parameter
+        $cari = '%' . strtolower($kataKunci) . '%';
+        $stmt = $this->db->prepare($this->sqlDasar . "
+            WHERE LOWER(p.kode) LIKE :cari1
+               OR LOWER(COALESCE(u.nama, p.nama_pelanggan)) LIKE :cari2
+               OR LOWER(p.nama_layanan) LIKE :cari3
+            ORDER BY p.tanggal DESC, p.id DESC");
+        $stmt->execute(['cari1' => $cari, 'cari2' => $cari, 'cari3' => $cari]);
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    public function potongan()
+    public function milikUser($userId)
     {
-        return (int)round($this->subtotal() * $this->diskon / 100);
-    }
-
-    public function total()
-    {
-        return $this->subtotal() - $this->potongan();
-    }
-
-    public function sudahDitimbang()
-    {
-        return $this->berat > 0;
+        $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.user_id = :user_id ORDER BY p.tanggal DESC, p.id DESC");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
     public function menungguJemput()
     {
-        return $this->status == 'Menunggu Jemput';
+        $stmt = $this->db->query($this->sqlDasar . " WHERE p.status = 'Menunggu Jemput' ORDER BY p.tanggal, p.id");
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    public function sudahSelesai()
+    public function sudahDitimbang()
     {
-        return $this->status == 'Selesai' || $this->status == 'Diambil';
+        $stmt = $this->db->query($this->sqlDasar . " WHERE p.berat > 0 ORDER BY p.tanggal DESC, p.id DESC LIMIT 8");
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    public function punyaUlasan()
+    public function hariIni()
     {
-        return $this->ulasan_rating !== null;
+        $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.tanggal >= :awal AND p.tanggal < :akhir");
+        $stmt->execute([
+            'awal'  => date('Y-m-d') . ' 00:00:00',
+            'akhir' => date('Y-m-d', strtotime('+1 day')) . ' 00:00:00',
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pesanan');
     }
 
-    public function punyaDiskon()
+    public function jumlahDiproses()
     {
-        return $this->diskon > 0;
+        $stmt = $this->db->query("SELECT COUNT(*) FROM pesanan WHERE status IN ('Diterima', 'Dicuci')");
+        return (int)$stmt->fetchColumn();
     }
 
-    public function asal()
+    public function cariByKode($kode)
     {
-        return $this->sumber == 'aplikasi' ? 'Aplikasi' : 'Kios';
+        $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.kode = :kode");
+        $stmt->execute(['kode' => $kode]);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, 'Pesanan');
+        $pesanan = $stmt->fetch();
+        return $pesanan ? $pesanan : null;
     }
 
-    public function tanggalTampil($pakaiJam = true)
+    // harus milik user ini (pelanggan nggak bisa intip pesanan orang lain)
+    public function cariMilikUser($kode, $userId)
     {
-        return tglPendek($this->tanggal, $pakaiJam);
+        $stmt = $this->db->prepare($this->sqlDasar . " WHERE p.kode = :kode AND p.user_id = :user_id");
+        $stmt->execute(['kode' => $kode, 'user_id' => $userId]);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, 'Pesanan');
+        $pesanan = $stmt->fetch();
+        return $pesanan ? $pesanan : null;
     }
 
-    public function labelBerat()
+    // ================= CREATE =================
+
+    // Harga, nama layanan, nama promo & diskon DISALIN ke pesanan (snapshot)
+    public function buat($data)
     {
-        if (!$this->sudahDitimbang()) {
-            return '<span class="tag-tunggu">Belum ditimbang</span>';
+        $kode = 'ORD' . strtoupper(bin2hex(random_bytes(6))); // [tahap 1] acak aman, contoh ORD3FA91C07B2E4
+        $layanan = $data['layanan'];
+        $promo = $data['promo'];
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO pesanan
+                (kode, user_id, nama_pelanggan, sumber, layanan_id, nama_layanan, harga, satuan,
+                 berat, catatan, status, promo_id, nama_promo, diskon, tanggal)
+             VALUES
+                (:kode, :user_id, :nama_pelanggan, :sumber, :layanan_id, :nama_layanan, :harga, :satuan,
+                 :berat, :catatan, :status, :promo_id, :nama_promo, :diskon, :tanggal)"
+        );
+        $stmt->execute([
+            'kode'           => $kode,
+            'user_id'        => $data['user_id'],
+            'nama_pelanggan' => $data['nama_pelanggan'],
+            'sumber'         => $data['sumber'],
+            'layanan_id'     => $layanan['id'],
+            'nama_layanan'   => $layanan['nama'],
+            'harga'          => $layanan['harga'],
+            'satuan'         => $layanan['satuan'],
+            'berat'          => $data['berat'],
+            'catatan'        => $data['catatan'],
+            'status'         => $data['status'],
+            'promo_id'       => $promo ? $promo['id'] : null,
+            'nama_promo'     => $promo ? $promo['judul'] : '',
+            'diskon'         => $promo ? $promo['diskon'] : 0,
+            'tanggal'        => date('Y-m-d H:i:s'),
+        ]);
+        return $kode;
+    }
+
+    // ================= UPDATE =================
+
+    // $promo: array promo baru, null = tanpa promo, 'lama' = promo nggak diganti
+    public function ubahOlehPelanggan($kode, $userId, $layanan, $catatan, $promo)
+    {
+        $lama = $this->cariMilikUser($kode, $userId);
+        if (!$lama || !$lama->menungguJemput()) {
+            return false;
         }
-        return e(formatBerat($this->berat)) . ' ' . e($this->satuan);
+
+        if ($promo == 'lama') {
+            $promoId = $lama->promo_id;
+            $namaPromo = $lama->nama_promo;
+            $diskon = $lama->diskon;
+        } elseif ($promo) {
+            $promoId = $promo['id'];
+            $namaPromo = $promo['judul'];
+            $diskon = $promo['diskon'];
+        } else {
+            $promoId = null;
+            $namaPromo = '';
+            $diskon = 0;
+        }
+
+        $stmt = $this->db->prepare(
+            "UPDATE pesanan
+             SET layanan_id = :layanan_id, nama_layanan = :nama_layanan, harga = :harga, satuan = :satuan,
+                 catatan = :catatan, promo_id = :promo_id, nama_promo = :nama_promo, diskon = :diskon
+             WHERE kode = :kode AND user_id = :user_id AND status = 'Menunggu Jemput'"
+        );
+        $stmt->execute([
+            'layanan_id' => $layanan['id'], 'nama_layanan' => $layanan['nama'],
+            'harga' => $layanan['harga'], 'satuan' => $layanan['satuan'], 'catatan' => $catatan,
+            'promo_id' => $promoId, 'nama_promo' => $namaPromo, 'diskon' => $diskon,
+            'kode' => $kode, 'user_id' => $userId,
+        ]);
+        // [tahap 1] 0 baris = pesanan keburu dijemput -> jangan bilang berhasil
+        return $stmt->rowCount() == 1;
     }
 
-    public function labelTotal()
+    public function ubahOlehAdmin($kode, $layanan, $berat, $status, $catatan)
     {
-        if (!$this->sudahDitimbang()) {
-            return '<span class="muted">Menunggu berat</span>';
-        }
-        $html = '<strong>' . e(rupiah($this->total())) . '</strong>';
-        if ($this->punyaDiskon()) {
-            $html .= '<span class="tag-promo">Diskon ' . (int)$this->diskon . '%</span>';
-        }
-        return $html;
+        $stmt = $this->db->prepare(
+            "UPDATE pesanan
+             SET layanan_id = :layanan_id, nama_layanan = :nama_layanan, harga = :harga, satuan = :satuan,
+                 berat = :berat, status = :status, catatan = :catatan
+             WHERE kode = :kode"
+        );
+        $stmt->execute([
+            'layanan_id' => $layanan['id'], 'nama_layanan' => $layanan['nama'],
+            'harga' => $layanan['harga'], 'satuan' => $layanan['satuan'],
+            'berat' => $berat, 'status' => $status, 'catatan' => $catatan, 'kode' => $kode,
+        ]);
+    }
+
+    // kurir udah nimbang -> isi berat, status jadi "Diterima"
+    public function isiBerat($kode, $berat)
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE pesanan SET berat = :berat, status = 'Diterima'
+             WHERE kode = :kode AND status = 'Menunggu Jemput'"
+        );
+        $stmt->execute(['berat' => $berat, 'kode' => $kode]);
+        return $stmt->rowCount() == 1;
+    }
+
+    // dipanggil lewat AJAX di dashboard admin
+    public function ubahStatus($kode, $status)
+    {
+        $stmt = $this->db->prepare("UPDATE pesanan SET status = :status WHERE kode = :kode AND berat > 0");
+        $stmt->execute(['status' => $status, 'kode' => $kode]);
+    }
+
+    // ================= DELETE =================
+
+    public function batalkan($kode, $userId)
+    {
+        $stmt = $this->db->prepare(
+            "DELETE FROM pesanan WHERE kode = :kode AND user_id = :user_id AND status = 'Menunggu Jemput'"
+        );
+        $stmt->execute(['kode' => $kode, 'user_id' => $userId]);
+        return $stmt->rowCount() == 1;
+    }
+
+    public function hapusByKode($kode)
+    {
+        $stmt = $this->db->prepare("DELETE FROM pesanan WHERE kode = :kode");
+        $stmt->execute(['kode' => $kode]);
+        return $stmt->rowCount() == 1;
     }
 }

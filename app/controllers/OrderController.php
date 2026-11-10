@@ -19,20 +19,33 @@ class OrderController extends Controller
         $form = ['id' => '', 'layanan' => '', 'catatan' => '', 'promo' => ''];
 
         if ($this->adaPost() && $this->post('aksi') == 'simpan') {
+<<<<<<< HEAD
             $form['id'] = $this->post('id');           
             $form['layanan'] = $this->post('layanan');  
+=======
+            $form['id'] = $this->post('id');
+            $form['layanan'] = $this->post('layanan');
+>>>>>>> 22a935c (update fitur)
             $form['catatan'] = bersihkan($this->post('catatan'), 500);
-            $form['promo'] = $this->post('promo');      // '' / 'lama' / id promo
+            $form['promo'] = $this->post('promo');   // '' / 'lama' / id promo
 
             $layanan = null;
             if ($form['layanan'] != '') {
                 $layanan = $this->layananModel->cari($form['layanan']);
             }
 
+<<<<<<< HEAD
             $promo = null;
             $errorPromo = '';
             if ($form['promo'] == 'lama') {
                 $promo = 'lama'; 
+=======
+            // cek promo yang dipilih (selalu diverifikasi ke database)
+            $promo = null;
+            $errorPromo = '';
+            if ($form['promo'] == 'lama') {
+                $promo = 'lama';
+>>>>>>> 22a935c (update fitur)
                 if ($form['id'] == '') {
                     $errorPromo = 'Promo nggak valid.';
                 }
@@ -109,6 +122,10 @@ class OrderController extends Controller
             }
         }
 
+<<<<<<< HEAD
+=======
+        // promo dari pesanan ini (mungkin udah nggak aktif)
+>>>>>>> 22a935c (update fitur)
         $promoLama = null;
         if ($form['promo'] == 'lama' && $form['id'] != '') {
             $p = $this->pesananModel->cariMilikUser($form['id'], $saya->getId());
