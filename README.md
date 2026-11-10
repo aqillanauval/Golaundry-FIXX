@@ -4,8 +4,6 @@ Aplikasi web laundry antar-jemput untuk anak kos. Pelanggan memesan lewat web, k
 
 Dibuat untuk tugas mata kuliah Pemrograman Web, Basis Data, dan Teknologi Sistem Terintegrasi.
 
-Teknologi: PHP native (OOP + MVC), PDO, Supabase (PostgreSQL), JavaScript (AJAX).
-
 ## Fitur
 
 Pelanggan:

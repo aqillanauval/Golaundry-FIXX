@@ -1,8 +1,4 @@
-// ============================================================
-// dashboard-admin.js  -  AJAX: ubah status pesanan tanpa reload halaman
-// Alurnya: dropdown berubah -> fetch (POST) ke dashboard-admin.php
-//          -> PHP membalas JSON -> tampilkan toast.
-// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   const semuaDropdown = document.querySelectorAll('.select-status');
 
@@ -14,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
       data.append('aksi', 'ubah_status');
       data.append('id', dropdown.dataset.id);
       data.append('status', dropdown.value);
-      // token form dari <meta name="csrf-token"> di header, wajib buat semua POST
       const meta = document.querySelector('meta[name="csrf-token"]');
       data.append('token', meta ? meta.content : '');
 
@@ -26,12 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (res) { return res.json(); })
         .then(function (hasil) {
           if (hasil.sukses) {
-            // ganti warna dropdown sesuai status baru
             dropdown.className = 'select-status status-' + dropdown.value.toLowerCase().replace(/ /g, '-');
             statusSebelumnya = dropdown.value;
             tampilToast(hasil.pesan, 'sukses');
           } else {
-            dropdown.value = statusSebelumnya; // kembalikan pilihan lama
+            dropdown.value = statusSebelumnya; 
             tampilToast(hasil.pesan, 'error');
           }
         })

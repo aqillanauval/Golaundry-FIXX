@@ -1,6 +1,4 @@
-/* ============================================================
-   auth.css - tampilan halaman login & register
-   ============================================================ */
+
 :root {
   --biru-900: #14284b;
   --biru-800: #14284b;
@@ -23,7 +21,6 @@ body.auth-body {
   justify-content: center;
   padding: 28px 16px;
   color: var(--teks);
-  /* latar denim: serat miring di atas biru tua (sama kayak sidebar) */
   background-color: #14284b;
   background-image:
     repeating-linear-gradient(135deg, rgba(255, 255, 255, .035) 0 2px, transparent 2px 6px),
@@ -41,13 +38,11 @@ body.auth-body {
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
 }
-/* jahitan benang kuning di sekeliling kartu */
 .auth-card::after {
   content: ''; position: absolute; inset: 10px; border-radius: 20px;
   border: 2px dashed rgba(232, 176, 74, .8); pointer-events: none; z-index: 5;
 }
 
-/* ---------- sisi kiri (gambar) ---------- */
 .auth-visual {
   position: relative;
   background: linear-gradient(160deg, #bfdbfe 0%, #93c5fd 55%, #60a5fa 100%);
@@ -66,7 +61,6 @@ body.auth-body {
 .visual-cadangan h2 { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
 .visual-cadangan p { font-size: 22px; font-weight: 600; line-height: 1.35; }
 
-/* gelembung busa dekoratif di panel cadangan (hilang kalau gambar banner ada) */
 .auth-visual::before, .auth-visual::after { content: ''; position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .22); }
 .auth-visual::before { width: 300px; height: 300px; right: -90px; top: -80px; }
 .auth-visual::after { width: 180px; height: 180px; left: -50px; bottom: -40px; }
@@ -75,7 +69,6 @@ body.auth-body {
 .visual-cadangan { z-index: 1; }
 .visual-gambar { z-index: 2; }
 
-/* ---------- sisi kanan (form) ---------- */
 .auth-form {
   position: relative;
   padding: 56px 52px 40px;
@@ -88,7 +81,6 @@ body.auth-body {
 .auth-form h1 { font-family: 'Bricolage Grotesque','Figtree',sans-serif; font-size: 34px; font-weight: 800; color: var(--biru-800); letter-spacing: -.5px; }
 .auth-form .sub { color: var(--abu); margin: 6px 0 26px; font-size: 16px; }
 
-/* ---------- input ---------- */
 .input-group { position: relative; margin-bottom: 18px; }
 .input-group input {
   width: 100%; height: 58px;
@@ -120,7 +112,6 @@ body.auth-body {
 .error-text { color: var(--merah); font-size: 14px; min-height: 0; margin: -6px 0 12px; }
 .error-text:empty { display: none; }
 
-/* ---------- tombol ---------- */
 .btn-utama {
   width: 100%; height: 58px; border: 0; border-radius: 14px;
   background: var(--biru-600); color: #fff;
@@ -148,13 +139,11 @@ body.auth-body {
 .pindah-halaman a { color: var(--biru-600); font-weight: 700; text-decoration: none; }
 .pindah-halaman a:hover { text-decoration: underline; }
 
-/* ---------- pesan ---------- */
 .alert { padding: 13px 16px; border-radius: 12px; font-size: 14.5px; margin-bottom: 18px; transition: opacity .4s; }
 .alert-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 .alert-sukses { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .alert.hilang { opacity: 0; }
 
-/* ---------- toast ---------- */
 .wadah-toast { position: fixed; top: 20px; right: 20px; z-index: 99; display: flex; flex-direction: column; gap: 10px; }
 .toast {
   padding: 13px 20px; border-radius: 12px; color: #fff; font-size: 14.5px; font-weight: 600;
@@ -165,7 +154,6 @@ body.auth-body {
 .toast-error { background: #475569; }
 .toast-sukses { background: #16a34a; }
 
-/* ---------- responsif ---------- */
 @media (max-width: 900px) {
   .auth-card { grid-template-columns: 1fr; min-height: 0; }
   .auth-visual { display: none; }

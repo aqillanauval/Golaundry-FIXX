@@ -1,4 +1,4 @@
-<?php // views/layout/auth_head.php: <head> untuk halaman login & register. Butuh $judulTab ?>
+<?php  ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>

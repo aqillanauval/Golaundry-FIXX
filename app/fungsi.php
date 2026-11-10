@@ -1,24 +1,14 @@
 <?php
-// ============================================================
-// fungsi.php  ->  kumpulan fungsi kecil yang dipakai di banyak halaman
-// (urusan database udah pindah ke class Model, di sini cuma fungsi bantu)
-// ============================================================
-
-// ---------- tampilan ----------
-
-// biar teks aman ditampilin di HTML (mencegah XSS)
 function e($teks)
 {
     return htmlspecialchars((string)$teks, ENT_QUOTES, 'UTF-8');
 }
 
-// 15000 -> "Rp 15.000"
 function rupiah($angka)
 {
     return 'Rp ' . number_format((float)$angka, 0, ',', '.');
 }
 
-// 3.0 -> "3", 2.5 -> "2,5"
 function formatBerat($berat)
 {
     $berat = round((float)$berat, 1);
@@ -28,14 +18,12 @@ function formatBerat($berat)
     return number_format($berat, 1, ',', '');
 }
 
-// rapihin input: buang spasi di depan/belakang & karakter aneh, terus batasi panjangnya
 function bersihkan($teks, $maks = 255)
 {
     $teks = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', (string)$teks);
     return mb_substr(trim($teks), 0, $maks);
 }
 
-// "Selasa, 10 November 2026"
 function tanggalIndo()
 {
     $hari  = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -44,7 +32,6 @@ function tanggalIndo()
     return $hari[date('w')] . ', ' . date('j') . ' ' . $bulan[date('n')] . ' ' . date('Y');
 }
 
-// "2026-10-13 09:30:00" -> "13 Okt 2026" (atau "13 Okt 2026 09:30" kalau $pakaiJam = true)
 function tglPendek($tanggal = null, $pakaiJam = false)
 {
     $waktu = $tanggal ? strtotime($tanggal) : time();
@@ -56,7 +43,6 @@ function tglPendek($tanggal = null, $pakaiJam = false)
     return $hasil;
 }
 
-// sapaan sesuai jam sekarang
 function sapaan()
 {
     $jam = date('G');
@@ -66,15 +52,12 @@ function sapaan()
     return 'Selamat malam';
 }
 
-// "Rina" -> "R" (buat avatar bulat)
 function inisial($nama)
 {
     return mb_strtoupper(mb_substr($nama, 0, 1));
 }
 
-// ---------- validasi username ----------
 
-// email dijadiin huruf kecil semua, nomor HP dibiarin
 function normalUser($username)
 {
     $username = trim($username);
@@ -84,17 +67,12 @@ function normalUser($username)
     return $username;
 }
 
-// username boleh email ATAU nomor HP 9-15 angka
 function usernameValid($username)
 {
     $emailValid = filter_var($username, FILTER_VALIDATE_EMAIL) !== false;
     $hpValid = preg_match('/^\+?[0-9]{9,15}$/', $username) === 1;
     return $emailValid || $hpValid;
 }
-
-// ---------- token form (CSRF) ----------
-// Token acak disimpan di SESSION dan ditaruh di setiap form.
-// Waktu form dikirim, token dicocokin. Kalau beda = form palsu dari web lain, ditolak.
 
 function ambilToken()
 {
@@ -114,7 +92,6 @@ function tokenCocok($tokenDariForm)
     return is_string($tokenDariForm) && hash_equals(ambilToken(), $tokenDariForm);
 }
 
-// ---------- pesan flash (muncul sekali, abis itu hilang) ----------
 
 function tampilFlash()
 {
@@ -122,15 +99,13 @@ function tampilFlash()
         return '';
     }
     $flash = $_SESSION['flash'];
-    unset($_SESSION['flash']); // hapus biar nggak muncul lagi
+    unset($_SESSION['flash']); 
 
     $kelas = ($flash['tipe'] == 'error') ? 'alert-error' : 'alert-sukses';
     return '<div class="alert ' . $kelas . '" data-autohide>' . e($flash['pesan']) . '</div>';
 }
 
-// ---------- status pesanan ----------
 
-// "Menunggu Jemput" -> "menunggu-jemput" (dipakai buat nama class CSS)
 function statusKelas($status)
 {
     return strtolower(str_replace(' ', '-', $status));
@@ -141,11 +116,9 @@ function badgeStatus($status)
     return '<span class="badge badge-' . e(statusKelas($status)) . '">' . e($status) . '</span>';
 }
 
-// ---------- promo ----------
 
 function promoMasihBerlaku($promo)
 {
-    // format tanggal Y-m-d bisa langsung dibandingin kayak teks
     return $promo['berlaku_sampai'] >= date('Y-m-d');
 }
 
@@ -154,9 +127,7 @@ function adaFotoPromo($promo)
     return $promo['foto'] != '' && file_exists(FOLDER_UPLOAD . $promo['foto']);
 }
 
-// ---------- potongan HTML yang sering dipakai ----------
 
-// tombol hapus kecil (form POST + konfirmasi)
 function formHapus($nilai, $pesanKonfirmasi, $teksTombol = 'Hapus')
 {
     return '<form method="post" class="inline" data-konfirmasi="' . e($pesanKonfirmasi) . '">'
@@ -167,7 +138,6 @@ function formHapus($nilai, $pesanKonfirmasi, $teksTombol = 'Hapus')
          . '</form>';
 }
 
-// ikon dari Font Awesome (kit-nya dipasang di <head> tiap halaman)
 function ikon($nama, $ukuran = 20)
 {
     $daftar = [

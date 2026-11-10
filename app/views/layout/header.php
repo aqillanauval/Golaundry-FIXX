@@ -1,10 +1,4 @@
 <?php
-// ============================================================
-// views/layout/header.php  -  kerangka atas halaman setelah login
-// Variabel dari controller: $pengguna (objek Admin/Pelanggan), $judulHalaman, $subJudul
-// Menu sidebar diambil dari $pengguna->getMenu()  (polimorfisme: isi menu
-// Admin dan Pelanggan berbeda, tapi cara memanggilnya sama).
-// ============================================================
 $halamanIni = basename($_SERVER['SCRIPT_NAME']);
 ?>
 <!DOCTYPE html>

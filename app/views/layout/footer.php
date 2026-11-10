@@ -1,10 +1,8 @@
 <?php
-// views/layout/footer.php: penutup halaman + script.
-// Controller bisa mengirim $jsTambahan = ['nama-file.js'].
 ?>
-    </div><!-- /.content -->
+    </div>
   </main>
-</div><!-- /.app -->
+</div>
 <script src="assets/js/app.js"></script>
 <?php if (!empty($jsTambahan)): foreach ($jsTambahan as $js): ?>
 <script src="assets/js/<?= e($js) ?>"></script>
