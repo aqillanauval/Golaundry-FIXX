@@ -12,19 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Nama pendek middleware buatan sendiri
         $middleware->alias([
             'role'        => \App\Http\Middleware\CekRole::class,
             'tanpa.cache' => \App\Http\Middleware\TanpaCache::class,
         ]);
 
-        // Belum login tapi buka halaman terproteksi -> ke halaman login
         $middleware->redirectGuestsTo(function (Request $request) {
             session()->flash('error', 'Login dulu ya untuk membuka halaman itu.');
             return route('login');
         });
 
-        // Sudah login tapi buka halaman login/registrasi -> ke dashboard
         $middleware->redirectUsersTo(function () {
             return route('dashboard');
         });
