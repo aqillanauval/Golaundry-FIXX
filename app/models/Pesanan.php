@@ -1,38 +1,86 @@
 <?php
-class Pesanan
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Pesanan extends Model
 {
+    protected $table = 'pesanan';
+    public $timestamps = false;
+
+    // Urutan status laundry GOLaundry
     const DAFTAR_STATUS = ['Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'];
+
+    // Status yang boleh dipilih staff setelah cucian ditimbang
     const STATUS_PROSES = ['Diterima', 'Dicuci', 'Selesai', 'Diambil'];
 
-    public $id;
-    public $kode;            
-    public $user_id;
-    public $nama_pelanggan;
-    public $sumber;          
-    public $layanan_id;
-    public $nama_layanan;
-    public $harga;
-    public $satuan;
-    public $berat;       
-    public $catatan;      
-    public $status;
-    public $promo_id;
-    public $nama_promo;
-    public $diskon;       
-    public $tanggal;
+    protected $fillable = [
+        'kode', 'user_id', 'nama_pelanggan', 'sumber',
+        'layanan_id', 'nama_layanan', 'harga', 'satuan',
+        'berat', 'catatan', 'status',
+        'promo_id', 'nama_promo', 'diskon', 'tanggal',
+    ];
 
-    public $pelanggan;     
-    public $ulasan_rating;
-    public $ulasan_komentar;
+    protected $casts = [
+        'tanggal' => 'datetime',
+        'berat'   => 'float',
+        'harga'   => 'integer',
+        'diskon'  => 'integer',
+    ];
+
+    // Di URL, pesanan dicari pakai kode (contoh: /nota/ORD6ab7da28cce8f), bukan id
+    public function getRouteKeyName()
+    {
+        return 'kode';
+    }
+
+    // ---------- Relasi ----------
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function layanan()
+    {
+        return $this->belongsTo(Layanan::class, 'layanan_id');
+    }
+
+    public function promo()
+    {
+        return $this->belongsTo(Promo::class, 'promo_id');
+    }
+
+    public function ulasan()
+    {
+        return $this->hasOne(Ulasan::class, 'pesanan_id');
+    }
+
+    // ---------- Fungsi bantu ----------
+
+    public static function buatKode()
+    {
+        return uniqid('ORD'); // contoh: ORD6ab7da28cce8f
+    }
+
+    // Nama pelanggan: ambil dari akun kalau masih ada, kalau tidak pakai nama yang disimpan
+    public function namaPelanggan()
+    {
+        if ($this->user) {
+            return $this->user->nama;
+        }
+        return $this->nama_pelanggan;
+    }
 
     public function subtotal()
     {
-        return (int)round($this->harga * $this->berat);
+        return (int) round($this->harga * $this->berat);
     }
 
     public function potongan()
     {
-        return (int)round($this->subtotal() * $this->diskon / 100);
+        return (int) round($this->subtotal() * $this->diskon / 100);
     }
 
     public function total()
@@ -55,11 +103,6 @@ class Pesanan
         return $this->status == 'Selesai' || $this->status == 'Diambil';
     }
 
-    public function punyaUlasan()
-    {
-        return $this->ulasan_rating !== null;
-    }
-
     public function punyaDiskon()
     {
         return $this->diskon > 0;
@@ -70,28 +113,9 @@ class Pesanan
         return $this->sumber == 'aplikasi' ? 'Aplikasi' : 'Kios';
     }
 
-    public function tanggalTampil($pakaiJam = true)
+    // Posisi status di DAFTAR_STATUS (0 - 4), dipakai untuk tracker
+    public function langkahStatus()
     {
-        return tglPendek($this->tanggal, $pakaiJam);
-    }
-
-    public function labelBerat()
-    {
-        if (!$this->sudahDitimbang()) {
-            return '<span class="tag-tunggu">Belum ditimbang</span>';
-        }
-        return e(formatBerat($this->berat)) . ' ' . e($this->satuan);
-    }
-
-    public function labelTotal()
-    {
-        if (!$this->sudahDitimbang()) {
-            return '<span class="muted">Menunggu berat</span>';
-        }
-        $html = '<strong>' . e(rupiah($this->total())) . '</strong>';
-        if ($this->punyaDiskon()) {
-            $html .= '<span class="tag-promo">Diskon ' . (int)$this->diskon . '%</span>';
-        }
-        return $html;
+        return array_search($this->status, self::DAFTAR_STATUS);
     }
 }

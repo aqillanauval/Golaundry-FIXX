@@ -1,0 +1,61 @@
+<?php
+// Pesan validasi bahasa Indonesia.
+// Laravel otomatis memakai file ini karena APP_LOCALE=id di file .env
+// :attribute akan diganti dengan nama kolom di bagian 'attributes' paling bawah.
+
+return [
+    'required'         => ':Attribute wajib diisi.',
+    'required_with'    => ':Attribute wajib diisi kalau kamu mengisi :values.',
+    'string'           => ':Attribute harus berupa teks.',
+    'integer'          => ':Attribute harus berupa angka bulat.',
+    'numeric'          => ':Attribute harus berupa angka.',
+    'date'             => ':Attribute harus berupa tanggal yang benar.',
+    'after_or_equal'   => ':Attribute minimal tanggal hari ini.',
+    'email'            => ':Attribute harus berupa email yang valid.',
+    'unique'           => ':Attribute ini sudah terdaftar.',
+    'exists'           => ':Attribute yang dipilih tidak ditemukan.',
+    'in'               => ':Attribute yang dipilih tidak valid.',
+    'confirmed'        => 'Konfirmasi :attribute belum sama.',
+    'current_password' => 'Password lama yang kamu masukkan salah.',
+    'regex'            => 'Format :attribute tidak valid.',
+    'image'            => ':Attribute harus berupa gambar.',
+    'mimes'            => ':Attribute harus berformat :values.',
+    'between'          => [
+        'numeric' => ':Attribute harus antara :min sampai :max.',
+    ],
+    'min'              => [
+        'numeric' => ':Attribute minimal :min.',
+        'string'  => ':Attribute minimal :min karakter.',
+    ],
+    'max'              => [
+        'numeric' => ':Attribute maksimal :max.',
+        'string'  => ':Attribute maksimal :max karakter.',
+        'file'    => 'Ukuran :attribute maksimal :max KB.',
+    ],
+
+    'attributes' => [
+        'nama'                  => 'nama',
+        'username'              => 'email / no. HP',
+        'password'              => 'password',
+        'password_baru'         => 'password baru',
+        'password_lama'         => 'password lama',
+        'konfirmasi_password'   => 'password',
+        'harga'                 => 'harga',
+        'satuan'                => 'satuan',
+        'jabatan'               => 'jabatan',
+        'no_hp'                 => 'no. HP',
+        'judul'                 => 'judul promo',
+        'deskripsi'             => 'deskripsi',
+        'diskon'                => 'diskon',
+        'berlaku_sampai'        => 'tanggal berlaku',
+        'foto'                  => 'foto promo',
+        'layanan_id'            => 'layanan',
+        'promo_id'              => 'promo',
+        'catatan'               => 'alamat jemput',
+        'nama_pelanggan'        => 'nama pelanggan',
+        'berat'                 => 'berat cucian',
+        'status'                => 'status',
+        'rating'                => 'rating',
+        'komentar'              => 'komentar',
+    ],
+];
