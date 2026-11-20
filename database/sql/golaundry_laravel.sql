@@ -1,11 +1,3 @@
--- =========================================================
--- GOLaundry (Laravel) - struktur database MariaDB
--- CADANGAN: cara utama tetap "php artisan migrate --seed".
--- Pakai file ini hanya kalau migration bermasalah:
--- phpMyAdmin > buat database golaundry_laravel > tab Import.
--- Isinya sama dengan hasil 6 file di database/migrations.
--- =========================================================
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -94,7 +86,6 @@ CREATE TABLE `ulasan` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Supaya "php artisan migrate" tahu tabel-tabel ini sudah dibuat
 INSERT INTO `migrations` (`migration`, `batch`) VALUES
   ('2026_11_20_000001_create_users_table', 1),
   ('2026_11_20_000002_create_layanan_table', 1),
@@ -103,7 +94,6 @@ INSERT INTO `migrations` (`migration`, `batch`) VALUES
   ('2026_11_20_000005_create_pesanan_table', 1),
   ('2026_11_20_000006_create_ulasan_table', 1);
 
--- Data awal (password: admin123 dan pelanggan123, sudah di-hash)
 INSERT INTO `users` (`username`, `password`, `nama`, `role`) VALUES
   ('admin@golaundry.com',     '$2y$10$RJecGaePKNPLTeIcFjmkCeUq2YZT6G3zVi8rxrmP2zkxzM2wkzgjm', 'Admin GoLaundry',     'admin'),
   ('pelanggan@golaundry.com', '$2y$10$1vDYJu6UKrQcheuX0GHE8eks/bR0ZZqQjwtMsRjmOfOFOR/hnB1a.', 'Pelanggan GoLaundry', 'customer');

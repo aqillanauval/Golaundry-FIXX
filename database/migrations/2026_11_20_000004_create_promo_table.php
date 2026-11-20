@@ -13,9 +13,9 @@ return new class extends Migration
             $table->id();
             $table->string('judul', 100);
             $table->string('deskripsi', 500);
-            $table->smallInteger('diskon');          // persen, 1 - 100
+            $table->smallInteger('diskon');         
             $table->date('berlaku_sampai');
-            $table->string('foto', 255)->default(''); // nama file di public/uploads/promo
+            $table->string('foto', 255)->default(''); 
         });
 
         DB::statement('ALTER TABLE promo ADD CONSTRAINT chk_promo_diskon CHECK (diskon BETWEEN 1 AND 100)');

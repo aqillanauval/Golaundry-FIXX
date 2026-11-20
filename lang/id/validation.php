@@ -1,7 +1,4 @@
 <?php
-// Pesan validasi bahasa Indonesia.
-// Laravel otomatis memakai file ini karena APP_LOCALE=id di file .env
-// :attribute akan diganti dengan nama kolom di bagian 'attributes' paling bawah.
 
 return [
     'required'         => ':Attribute wajib diisi.',

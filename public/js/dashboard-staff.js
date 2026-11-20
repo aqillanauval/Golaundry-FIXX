@@ -1,8 +1,3 @@
-// =========================================================
-// AJAX: ubah status pesanan tanpa reload halaman
-// Dipakai di dashboard staff dan halaman transaksi.
-// =========================================================
-
 document.addEventListener('DOMContentLoaded', function () {
   const tokenCsrf = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -13,12 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const data = new URLSearchParams();
       data.append('status', dropdown.value);
 
-      // Alamat tujuan diambil dari atribut data-url (dibuat dengan route() di Blade)
       fetch(dropdown.dataset.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRF-TOKEN': tokenCsrf, // token CSRF Laravel
+          'X-CSRF-TOKEN': tokenCsrf, 
           'Accept': 'application/json'
         },
         body: data.toString()
@@ -27,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (hasil) {
           if (hasil.sukses) {
             statusSebelumnya = dropdown.value;
-            // ganti juga label status di baris yang sama (kalau ada)
             const label = dropdown.closest('tr') ? dropdown.closest('tr').querySelector('.status') : null;
             if (label) {
               label.className = 'status status-' + dropdown.value.toLowerCase().replace(/ /g, '-');

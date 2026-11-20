@@ -1,10 +1,5 @@
-// =========================================================
-// GOLaundry - JavaScript umum (dipakai di semua halaman)
-// =========================================================
-
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ---------- 1. Buka/tutup sidebar di HP ----------
   const sidebar = document.querySelector('#sidebar');
   const overlay = document.querySelector('#overlay');
   const tombolMenu = document.querySelector('#menuToggle');
@@ -20,19 +15,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ---------- 2. Tutup pesan sukses/error ----------
   document.querySelectorAll('.alert .tutup').forEach(function (tombol) {
     tombol.addEventListener('click', function () {
       tombol.closest('.alert').remove();
     });
   });
 
-  // Pesan sukses hilang sendiri setelah 5 detik
   document.querySelectorAll('.alert-sukses').forEach(function (alert) {
     setTimeout(function () { alert.remove(); }, 5000);
   });
 
-  // ---------- 3. Tampilkan / sembunyikan password ----------
   document.querySelectorAll('.lihat-password').forEach(function (tombol) {
     tombol.addEventListener('click', function () {
       const input = tombol.parentElement.querySelector('input');
@@ -46,21 +38,18 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
-  // ---------- 4. Konfirmasi sebelum menghapus ----------
-  // Form yang punya atribut data-konfirmasi akan memunculkan modal dulu
+  
   const modal = document.querySelector('#modalKonfirmasi');
   let formMenunggu = null;
 
   document.querySelectorAll('form[data-konfirmasi]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       if (form.dataset.sudahYakin === 'ya') {
-        return; // sudah dikonfirmasi, kirim form
+        return; 
       }
       e.preventDefault();
 
       if (!modal) {
-        // cadangan kalau modal tidak ada: pakai confirm() bawaan browser
         if (confirm(form.dataset.konfirmasi)) {
           form.dataset.sudahYakin = 'ya';
           form.submit();
@@ -88,11 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// ---------- 5. Notifikasi kecil di pojok (dipakai AJAX) ----------
 function tampilToast(pesan, tipe) {
   const toast = document.createElement('div');
   toast.className = 'toast' + (tipe === 'error' ? ' error' : '');
-  toast.textContent = pesan; // textContent, bukan innerHTML, supaya aman dari XSS
+  toast.textContent = pesan; 
   document.body.appendChild(toast);
 
   setTimeout(function () { toast.classList.add('tampil'); }, 10);

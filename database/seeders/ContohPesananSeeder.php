@@ -7,9 +7,6 @@ use App\Models\Pesanan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-// OPSIONAL - contoh pesanan 14 hari terakhir supaya grafik dashboard tidak kosong
-// saat latihan presentasi. Tidak ikut jalan otomatis.
-// Jalankan: php artisan db:seed --class=ContohPesananSeeder
 class ContohPesananSeeder extends Seeder
 {
     public function run(): void

@@ -9,22 +9,18 @@ class User extends Authenticatable
 {
     protected $table = 'users';
 
-    // Tabel users cuma punya created_at, tidak ada updated_at
     const UPDATED_AT = null;
 
-    // Fitur "remember me" bawaan Laravel tidak dipakai
     protected $rememberTokenName = '';
 
     protected $fillable = ['username', 'password', 'nama', 'role'];
 
-    // password tidak ikut ditampilkan kalau data user diubah ke array/JSON
     protected $hidden = ['password'];
 
     protected $casts = [
         'created_at' => 'datetime',
     ];
 
-    // Relasi: satu user punya banyak pesanan
     public function pesanan()
     {
         return $this->hasMany(Pesanan::class, 'user_id');
@@ -40,7 +36,6 @@ class User extends Authenticatable
         return $this->isAdmin() ? 'Staff' : 'Pelanggan';
     }
 
-    // Menu sidebar sesuai role: [nama route, label, ikon Font Awesome, pola route aktif]
     public function menu()
     {
         if ($this->isAdmin()) {
@@ -74,10 +69,6 @@ class User extends Authenticatable
         ];
     }
 
-    // Hapus akun pelanggan.
-    // Pesanan yang belum dijemput ikut dihapus, pesanan lain tetap disimpan
-    // (user_id otomatis jadi NULL karena foreign key ON DELETE SET NULL).
-    // Pakai transaksi database: kalau satu langkah gagal, semua dibatalkan.
     public function hapusAkunPelanggan()
     {
         if ($this->isAdmin()) {

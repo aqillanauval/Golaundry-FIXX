@@ -20,7 +20,6 @@ class Promo extends Model
         return $this->hasMany(Pesanan::class, 'promo_id');
     }
 
-    // Semua promo yang belum lewat tanggal berlakunya
     public static function yangAktif()
     {
         return self::where('berlaku_sampai', '>=', date('Y-m-d'))
@@ -28,7 +27,6 @@ class Promo extends Model
             ->get();
     }
 
-    // Cari satu promo aktif berdasarkan id, hasilnya null kalau tidak ada / sudah habis
     public static function cariAktif($id)
     {
         return self::where('id', $id)

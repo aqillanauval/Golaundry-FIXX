@@ -8,7 +8,6 @@ class Ulasan extends Model
 {
     protected $table = 'ulasan';
 
-    // Cuma ada created_at
     const UPDATED_AT = null;
 
     protected $fillable = ['pesanan_id', 'rating', 'komentar'];

@@ -9,10 +9,8 @@ class Pesanan extends Model
     protected $table = 'pesanan';
     public $timestamps = false;
 
-    // Urutan status laundry GOLaundry
     const DAFTAR_STATUS = ['Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'];
 
-    // Status yang boleh dipilih staff setelah cucian ditimbang
     const STATUS_PROSES = ['Diterima', 'Dicuci', 'Selesai', 'Diambil'];
 
     protected $fillable = [
@@ -29,13 +27,10 @@ class Pesanan extends Model
         'diskon'  => 'integer',
     ];
 
-    // Di URL, pesanan dicari pakai kode (contoh: /nota/ORD6ab7da28cce8f), bukan id
     public function getRouteKeyName()
     {
         return 'kode';
     }
-
-    // ---------- Relasi ----------
 
     public function user()
     {
@@ -57,14 +52,11 @@ class Pesanan extends Model
         return $this->hasOne(Ulasan::class, 'pesanan_id');
     }
 
-    // ---------- Fungsi bantu ----------
-
     public static function buatKode()
     {
-        return uniqid('ORD'); // contoh: ORD6ab7da28cce8f
+        return uniqid('ORD'); 
     }
 
-    // Nama pelanggan: ambil dari akun kalau masih ada, kalau tidak pakai nama yang disimpan
     public function namaPelanggan()
     {
         if ($this->user) {
@@ -113,7 +105,6 @@ class Pesanan extends Model
         return $this->sumber == 'aplikasi' ? 'Aplikasi' : 'Kios';
     }
 
-    // Posisi status di DAFTAR_STATUS (0 - 4), dipakai untuk tracker
     public function langkahStatus()
     {
         return array_search($this->status, self::DAFTAR_STATUS);

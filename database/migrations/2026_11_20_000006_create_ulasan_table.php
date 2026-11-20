@@ -11,7 +11,6 @@ return new class extends Migration
     {
         Schema::create('ulasan', function (Blueprint $table) {
             $table->id();
-            // unique() -> satu pesanan maksimal punya satu ulasan
             $table->foreignId('pesanan_id')->unique()->constrained('pesanan')->cascadeOnDelete();
             $table->smallInteger('rating');
             $table->string('komentar', 500);

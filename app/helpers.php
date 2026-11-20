@@ -1,7 +1,4 @@
 <?php
-// Fungsi bantu yang bisa dipanggil dari mana saja (controller & Blade).
-// Pindahan dari app/fungsi.php di proyek PHP Native.
-// File ini di-load di AppServiceProvider.
 
 if (!function_exists('rupiah')) {
     function rupiah($angka)
@@ -11,7 +8,6 @@ if (!function_exists('rupiah')) {
 }
 
 if (!function_exists('formatBerat')) {
-    // 3.0 -> "3", 2.5 -> "2,5"
     function formatBerat($berat)
     {
         $berat = round((float) $berat, 1);
@@ -33,7 +29,6 @@ if (!function_exists('namaBulan')) {
 }
 
 if (!function_exists('tanggalIndo')) {
-    // Contoh: Jumat, 20 November 2026
     function tanggalIndo()
     {
         $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -42,7 +37,6 @@ if (!function_exists('tanggalIndo')) {
 }
 
 if (!function_exists('tglPendek')) {
-    // Contoh: 20 Nov 2026 14:30
     function tglPendek($tanggal, $pakaiJam = false)
     {
         $waktu = strtotime((string) $tanggal);
@@ -73,7 +67,6 @@ if (!function_exists('inisial')) {
 }
 
 if (!function_exists('normalUser')) {
-    // Email disimpan huruf kecil semua, nomor HP dibiarkan
     function normalUser($username)
     {
         $username = trim((string) $username);
@@ -85,7 +78,6 @@ if (!function_exists('normalUser')) {
 }
 
 if (!function_exists('usernameValid')) {
-    // Username boleh email yang valid ATAU nomor HP 9-15 angka
     function usernameValid($username)
     {
         $emailValid = filter_var($username, FILTER_VALIDATE_EMAIL) !== false;
@@ -95,7 +87,6 @@ if (!function_exists('usernameValid')) {
 }
 
 if (!function_exists('statusKelas')) {
-    // "Menunggu Jemput" -> "menunggu-jemput" (dipakai untuk class CSS)
     function statusKelas($status)
     {
         return strtolower(str_replace(' ', '-', $status));

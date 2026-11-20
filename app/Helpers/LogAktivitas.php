@@ -4,9 +4,6 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\Auth;
 
-// Log aktivitas disimpan di FILE (materi Operasi File / File Handling),
-// bukan di database. Lokasi: storage/logs/aktivitas.log
-// Format satu baris: waktu|pelaku|aksi|detail
 class LogAktivitas
 {
     public static function lokasiFile()
@@ -20,25 +17,23 @@ class LogAktivitas
             $pelaku = Auth::check() ? Auth::user()->username : 'tamu';
         }
 
-        // Tanda | dan enter dihapus supaya format baris tidak rusak
         $bersihkan = ['|', "\r", "\n"];
         $baris = date('Y-m-d H:i:s') . '|'
             . str_replace($bersihkan, ' ', $pelaku) . '|'
             . str_replace($bersihkan, ' ', $aksi) . '|'
             . str_replace($bersihkan, ' ', $detail) . "\n";
 
-        $file = @fopen(self::lokasiFile(), 'a'); // mode a = tulis di akhir file
+        $file = @fopen(self::lokasiFile(), 'a'); 
         if (!$file) {
             return;
         }
-        if (flock($file, LOCK_EX)) { // kunci file supaya tidak ditulis bersamaan
+        if (flock($file, LOCK_EX)) { 
             fwrite($file, $baris);
             flock($file, LOCK_UN);
         }
         fclose($file);
     }
 
-    // Ambil catatan terbaru (paling baru di atas)
     public static function baca($maks = 200)
     {
         $hasil = [];
@@ -46,7 +41,7 @@ class LogAktivitas
             return $hasil;
         }
 
-        $file = fopen(self::lokasiFile(), 'r'); // mode r = baca saja
+        $file = fopen(self::lokasiFile(), 'r'); 
         while (($baris = fgets($file)) !== false) {
             $baris = trim($baris);
             if ($baris == '') {
@@ -62,7 +57,7 @@ class LogAktivitas
                 ];
             }
             if (count($hasil) > $maks) {
-                array_shift($hasil); // buang yang paling lama
+                array_shift($hasil); 
             }
         }
         fclose($file);
@@ -80,7 +75,7 @@ class LogAktivitas
 
     public static function kosongkan()
     {
-        $file = fopen(self::lokasiFile(), 'w'); // mode w = isi lama dihapus
+        $file = fopen(self::lokasiFile(), 'w'); 
         fclose($file);
     }
 }

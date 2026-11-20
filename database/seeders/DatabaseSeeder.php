@@ -8,13 +8,10 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-// Data awal, sama dengan isi INSERT di database/mysql.sql proyek lama.
-// Jalankan: php artisan db:seed
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // firstOrCreate = buat kalau belum ada, jadi aman dijalankan berkali-kali
         User::firstOrCreate(
             ['username' => 'admin@golaundry.com'],
             ['password' => Hash::make('admin123'), 'nama' => 'Admin GoLaundry', 'role' => 'admin']
