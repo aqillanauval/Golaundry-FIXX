@@ -70,7 +70,6 @@ class PromoController extends Controller
         ]);
     }
 
-    // Upload foto ke folder public/uploads/promo dengan nama acak
     private function simpanFoto(Request $request)
     {
         $file = $request->file('foto');
@@ -81,7 +80,7 @@ class PromoController extends Controller
 
     private function hapusFoto($namaFile)
     {
-        $namaFile = basename((string) $namaFile); // cegah nama file aneh seperti ../../
+        $namaFile = basename((string) $namaFile); 
         $lokasi = public_path('uploads/promo/' . $namaFile);
         if ($namaFile != '' && file_exists($lokasi)) {
             unlink($lokasi);

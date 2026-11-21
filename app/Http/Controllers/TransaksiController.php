@@ -7,7 +7,6 @@ use App\Models\Pesanan;
 use App\Models\Promo;
 use Illuminate\Http\Request;
 
-// Staff: semua transaksi, catat pelanggan kios, isi berat, ubah status
 class TransaksiController extends Controller
 {
     public function index(Request $request)
@@ -20,7 +19,6 @@ class TransaksiController extends Controller
         return view('transaksi.index', $this->dataHalaman($request, $pesanan));
     }
 
-    // Catat transaksi pelanggan yang datang langsung ke kios
     public function store(Request $request)
     {
         $request->validate([
@@ -43,7 +41,7 @@ class TransaksiController extends Controller
         $layanan = Layanan::find($request->layanan_id);
         Pesanan::create([
             'kode'           => Pesanan::buatKode(),
-            'user_id'        => null, // pelanggan kios tidak punya akun
+            'user_id'        => null, 
             'nama_pelanggan' => trim($request->nama_pelanggan),
             'sumber'         => 'kios',
             'layanan_id'     => $layanan->id,
@@ -86,12 +84,11 @@ class TransaksiController extends Controller
 
     public function destroy(Pesanan $pesanan)
     {
-        $pesanan->delete(); // ulasannya ikut terhapus (ON DELETE CASCADE)
+        $pesanan->delete(); 
 
         return redirect()->route('transaksi.index')->with('sukses', 'Transaksi berhasil dihapus.');
     }
 
-    // Dari dashboard: isi berat cucian yang baru dijemput
     public function isiBerat(Request $request, Pesanan $pesanan)
     {
         $request->validate(['berat' => 'required|numeric|min:0.1|max:500']);
@@ -108,7 +105,6 @@ class TransaksiController extends Controller
             . ' untuk ' . $pesanan->namaPelanggan() . ' tersimpan. Total bayar ' . rupiah($pesanan->total()) . '.');
     }
 
-    // AJAX: ubah status tanpa reload halaman. Jawabannya berupa JSON.
     public function ubahStatus(Request $request, Pesanan $pesanan)
     {
         if (!in_array($request->status, Pesanan::STATUS_PROSES)) {
@@ -143,7 +139,6 @@ class TransaksiController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Ringkasan dihitung dari semua transaksi yang sudah ditimbang
         $totalPendapatan = 0;
         foreach (Pesanan::where('berat', '>', 0)->get() as $p) {
             $totalPendapatan += $p->total();

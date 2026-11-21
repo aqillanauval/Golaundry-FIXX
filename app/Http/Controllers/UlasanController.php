@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
-// Staff: melihat semua ulasan pelanggan dan menghapus ulasan yang tidak pantas
 class UlasanController extends Controller
 {
     public function index(Request $request)
@@ -16,7 +15,6 @@ class UlasanController extends Controller
             $query->where('rating', $request->rating);
         }
 
-        // Jumlah ulasan per bintang, untuk grafik kecil di atas
         $perBintang = [];
         for ($i = 5; $i >= 1; $i--) {
             $perBintang[$i] = Ulasan::where('rating', $i)->count();

@@ -7,7 +7,6 @@ use App\Models\Ulasan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// Pelanggan: riwayat pesanan + memberi, mengubah, dan menghapus ulasan
 class RiwayatController extends Controller
 {
     public function index(Request $request)
@@ -20,7 +19,6 @@ class RiwayatController extends Controller
             $query->where('status', $request->status);
         }
 
-        // ?ulas=KODE -> buka form ulasan untuk pesanan itu
         $formUlasan = null;
         if ($request->filled('ulas')) {
             $formUlasan = Pesanan::with('ulasan')
@@ -39,7 +37,6 @@ class RiwayatController extends Controller
         ]);
     }
 
-    // Simpan ulasan baru atau ubah ulasan lama (satu pesanan = satu ulasan)
     public function simpanUlasan(Request $request, Pesanan $pesanan)
     {
         $this->pastikanMilikSendiri($pesanan);
