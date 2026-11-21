@@ -1,5 +1,78 @@
 # Panduan GOLaundry
 
+## Alur Pengguna
+
+### Pelanggan
+
+```mermaid
+flowchart TD
+    A([Buka website]) --> B{Sudah punya akun?}
+    B -- Belum --> C[Registrasi]
+    C --> D[Login]
+    B -- Sudah --> D
+    D --> E[Dashboard Pelanggan]
+
+    E --> F[Buat Pesanan]
+    F --> G["Pilih layanan, isi alamat jemput, pilih promo"]
+    G --> H["Pesanan tersimpan, status Menunggu Jemput"]
+    H --> I{Sudah dijemput?}
+    I -- Belum --> J[Ubah atau batalkan pesanan]
+    J --> H
+    I -- Sudah --> K["Staff menimbang, total harga muncul"]
+    K --> L["Pantau status: Diterima, Dicuci, Selesai, Diambil"]
+    L --> M[Lihat dan cetak nota]
+    L --> N{Status Selesai atau Diambil?}
+    N -- Ya --> O[Beri, ubah, atau hapus ulasan]
+
+    E --> P[Riwayat Pesanan]
+    P --> L
+    E --> Q[Profil]
+    Q --> R["Ubah data, ganti password, atau hapus akun"]
+    E --> S([Logout])
+```
+
+1. Pelanggan baru mendaftar dengan nama, email atau nomor HP, dan password. Setelah itu login.
+2. Dashboard menampilkan pesanan yang sedang berjalan, promo aktif, dan pesanan terakhir.
+3. Di menu Buat Pesanan, pelanggan memilih layanan, mengisi alamat jemput, dan memilih promo kalau ada.
+4. Pesanan masuk dengan status Menunggu Jemput. Selama belum dijemput, pesanan masih bisa diubah atau dibatalkan.
+5. Setelah cucian dijemput dan ditimbang staff, berat dan total harga muncul di pesanan.
+6. Pelanggan memantau status di Dashboard atau Riwayat Pesanan, lalu bisa membuka dan mencetak nota.
+7. Setelah status Selesai atau Diambil, pelanggan bisa memberi rating 1 sampai 5 dan komentar. Ulasan masih bisa diubah atau dihapus.
+8. Di menu Profil, pelanggan bisa mengubah nama dan email/nomor HP, mengganti password (wajib isi password lama), atau menghapus akun.
+
+### Staff
+
+```mermaid
+flowchart TD
+    A([Login sebagai staff]) --> B[Dashboard Staff]
+    B --> C["Lihat ringkasan, grafik, dan daftar perlu dijemput"]
+
+    B --> D[Transaksi]
+    D --> E{Asal pesanan}
+    E -- Aplikasi --> F["Pesanan Menunggu Jemput"]
+    F --> G["Jemput cucian, isi berat hasil timbangan"]
+    G --> H["Status otomatis jadi Diterima"]
+    E -- Kios --> I["Catat pelanggan kios: nama, layanan, berat, status, promo"]
+    I --> H
+    H --> J["Ubah status: Dicuci, Selesai, Diambil"]
+    J --> K[Lihat dan cetak nota]
+
+    B --> L["Kelola Layanan, Promo, Pelanggan, Karyawan"]
+    L --> M["Tambah, lihat, ubah, hapus data"]
+    B --> N[Ulasan]
+    N --> O["Lihat rating, filter per bintang, hapus ulasan"]
+    B --> P[Profil]
+    B --> Q([Logout])
+```
+
+1. Staff login, lalu masuk ke Dashboard Staff yang berisi ringkasan pesanan, pendapatan, grafik 7 atau 30 hari, dan daftar cucian yang perlu dijemput.
+2. Pesanan dari aplikasi masuk dengan status Menunggu Jemput. Setelah cucian dijemput, staff mengisi berat hasil timbangan dan status otomatis berubah menjadi Diterima.
+3. Pelanggan yang datang langsung dicatat di menu Transaksi. Staff mengisi nama pelanggan, layanan, berat, status, promo, dan catatan.
+4. Staff mengubah status pesanan sampai Diambil. Status bisa diganti langsung dari tabel tanpa memuat ulang halaman.
+5. Nota setiap pesanan bisa dibuka dan dicetak.
+6. Staff mengelola data layanan, promo, akun pelanggan, dan karyawan (tambah, lihat, ubah, hapus).
+7. Di menu Ulasan, staff melihat rata-rata rating, memfilter per bintang, dan menghapus ulasan yang tidak pantas.
+
 ## Kebutuhan
 
 - PHP 8.3 atau lebih baru (Laravel 13 tidak jalan di PHP 8.2)
