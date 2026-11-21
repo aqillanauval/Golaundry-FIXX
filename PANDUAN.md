@@ -233,7 +233,6 @@ erDiagram
     }
 ```
 
-Diagram di atas tampil sebagai gambar di GitHub. Di VS Code perlu ekstensi Markdown Preview Mermaid Support.
 
 | Relasi | Jenis | Foreign key | Kalau data induk dihapus |
 | --- | --- | --- | --- |
@@ -339,18 +338,3 @@ Selain validasi di controller, beberapa aturan juga dipasang langsung di databas
 - `pesanan.status` hanya salah satu dari 5 status
 - `ulasan.rating` antara 1 dan 5
 
-Kenapa nama layanan, harga, dan diskon disalin ke tabel `pesanan`? Supaya nota lama tidak ikut berubah kalau harga layanan dinaikkan atau promo dihapus. Total harga dihitung dari kolom salinan tersebut:
-
-```
-subtotal = harga x berat
-potongan = subtotal x diskon / 100
-total    = subtotal - potongan
-```
-
-Urutan status pesanan:
-
-```
-Menunggu Jemput -> Diterima -> Dicuci -> Selesai -> Diambil
-```
-
-Menunggu Jemput hanya dipakai untuk pesanan dari aplikasi yang belum ditimbang. Transaksi kios langsung mulai dari Diterima karena beratnya sudah diketahui. Status hanya bisa diubah oleh staff.
