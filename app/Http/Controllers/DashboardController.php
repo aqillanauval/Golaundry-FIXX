@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // Satu alamat /dashboard, isinya beda sesuai role
     public function index(Request $request)
     {
         if (Auth::user()->isAdmin()) {
@@ -24,7 +23,6 @@ class DashboardController extends Controller
     {
         $hariIni = date('Y-m-d');
 
-        // Pendapatan dihitung dari pesanan yang sudah ditimbang
         $totalPendapatan = 0;
         $pendapatanHariIni = 0;
         foreach (Pesanan::where('berat', '>', 0)->get() as $p) {
@@ -34,7 +32,6 @@ class DashboardController extends Controller
             }
         }
 
-        // Grafik: jumlah pesanan & pendapatan per hari (7 atau 30 hari terakhir)
         $periode = $request->periode == 30 ? 30 : 7;
         $grafik = $this->dataGrafik($periode);
 
@@ -62,7 +59,6 @@ class DashboardController extends Controller
         $awal = date('Y-m-d', strtotime('-' . ($periode - 1) . ' days'));
         $pesananPeriode = Pesanan::whereDate('tanggal', '>=', $awal)->get();
 
-        // Siapkan semua tanggal dengan nilai 0 dulu
         $hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
         $data = [];
         for ($i = $periode - 1; $i >= 0; $i--) {
@@ -77,7 +73,6 @@ class DashboardController extends Controller
             ];
         }
 
-        // Lalu tambahkan isi dari database
         foreach ($pesananPeriode as $p) {
             $tanggal = $p->tanggal->format('Y-m-d');
             if (isset($data[$tanggal])) {
@@ -86,7 +81,6 @@ class DashboardController extends Controller
             }
         }
 
-        // Cari nilai terbesar untuk menghitung tinggi batang (dalam persen)
         $maks = 1;
         foreach ($data as $d) {
             if ($d['jumlah'] > $maks) {
@@ -108,7 +102,6 @@ class DashboardController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        // Pesanan aktif = pesanan terbaru yang belum selesai
         $aktif = null;
         $jumlahBerjalan = 0;
         $totalBelanja = 0;

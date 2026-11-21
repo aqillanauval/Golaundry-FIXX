@@ -11,7 +11,6 @@ class NotaController extends Controller
     {
         $user = Auth::user();
 
-        // Pelanggan tidak boleh membuka nota milik orang lain
         if (!$user->isAdmin() && $pesanan->user_id != $user->id) {
             abort(404);
         }

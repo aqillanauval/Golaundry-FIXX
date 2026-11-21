@@ -410,4 +410,3 @@ Selain validasi di controller, beberapa aturan juga dipasang langsung di databas
 - `pesanan.diskon` antara 0 dan 100
 - `pesanan.status` hanya salah satu dari 5 status
 - `ulasan.rating` antara 1 dan 5
-
