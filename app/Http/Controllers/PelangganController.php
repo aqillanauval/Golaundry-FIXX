@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-// Staff mengelola akun pelanggan
+
 class PelangganController extends Controller
 {
     public function index(Request $request)
@@ -88,7 +88,6 @@ class PelangganController extends Controller
             ->with('sukses', 'Akun pelanggan dihapus. Riwayat transaksinya tetap disimpan.');
     }
 
-    // Halaman ini hanya untuk akun pelanggan, akun staff tidak boleh diubah dari sini
     private function pastikanPelanggan(User $user)
     {
         if ($user->isAdmin()) {
@@ -100,7 +99,6 @@ class PelangganController extends Controller
     {
         $query = User::where('role', 'customer')->withCount('pesanan')->orderBy('nama');
         if ($request->filled('cari')) {
-            // dibungkus function supaya OR tidak ikut menggugurkan syarat role
             $query->where(function ($q) use ($request) {
                 $q->where('nama', 'like', '%' . $request->cari . '%')
                   ->orWhere('username', 'like', '%' . $request->cari . '%');

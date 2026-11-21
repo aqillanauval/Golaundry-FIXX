@@ -11,5 +11,5 @@ composer install
 copy .env.example .env
 php artisan key:generate
 php artisan migrate --seed
-php artisan serve
+php artisan migrate --seed
 ```

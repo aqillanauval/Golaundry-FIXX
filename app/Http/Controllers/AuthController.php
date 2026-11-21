@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // ---------- LOGIN ----------
 
     public function formLogin(Request $request)
     {
-        // Cookie "ingat saya" cuma menyimpan email/no. HP, bukan password
         $usernameTersimpan = $request->cookie('ingat_user', '');
 
         return view('auth.login', ['usernameTersimpan' => $usernameTersimpan]);
@@ -29,10 +27,8 @@ class AuthController extends Controller
 
         $username = normalUser($request->username);
 
-        // Auth::attempt mencari user berdasarkan username lalu mencocokkan password hash.
-        // Query-nya memakai prepared statement, jadi aman dari SQL Injection.
         if (Auth::attempt(['username' => $username, 'password' => $request->password])) {
-            // Ganti ID session setelah login (mencegah session fixation)
+            
             $request->session()->regenerate();
 
             if ($request->has('ingat')) {
@@ -50,7 +46,6 @@ class AuthController extends Controller
             ->onlyInput('username');
     }
 
-    // ---------- REGISTRASI ----------
 
     public function formRegister()
     {
@@ -59,7 +54,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // Rapikan username dulu (email jadi huruf kecil) sebelum dicek unique
         $request->merge(['username' => normalUser($request->username)]);
 
         $request->validate([
@@ -85,14 +79,13 @@ class AuthController extends Controller
             ->with('sukses', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    // ---------- LOGOUT ----------
 
     public function logout(Request $request)
     {
 
         Auth::logout();
-        $request->session()->invalidate();      // hapus semua data session
-        $request->session()->regenerateToken(); // buat token CSRF baru
+        $request->session()->invalidate();      
+        $request->session()->regenerateToken(); 
 
         return redirect()->route('login')
             ->with('sukses', 'Kamu sudah logout. Sampai jumpa lagi!');

@@ -8,14 +8,14 @@ use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// Pelanggan membuat, mengubah, dan membatalkan pesanan antar-jemput
+
 class PesananController extends Controller
 {
     public function index(Request $request)
     {
         return view('pesanan.index', [
             'dipilih'      => null,
-            'promoDipilih' => $request->promo, // dari tombol "Pakai promo" di dashboard
+            'promoDipilih' => $request->promo, 
             'layananList'  => Layanan::orderBy('id')->get(),
             'promoAktif'   => Promo::yangAktif(),
             'pesananSaya'  => $this->pesananSaya(),
@@ -83,7 +83,6 @@ class PesananController extends Controller
         $pesanan->satuan = $layanan->satuan;
         $pesanan->catatan = trim($request->catatan);
 
-        // promo_id: "" = tanpa promo, "lama" = tetap promo sebelumnya, angka = promo baru
         if ($request->promo_id == '') {
             $pesanan->promo_id = null;
             $pesanan->nama_promo = '';
@@ -123,7 +122,6 @@ class PesananController extends Controller
         ]);
     }
 
-    // Pelanggan hanya boleh mengubah pesanannya sendiri, dan hanya sebelum dijemput
     private function pastikanBisaDiubah(Pesanan $pesanan)
     {
         if ($pesanan->user_id != Auth::id()) {

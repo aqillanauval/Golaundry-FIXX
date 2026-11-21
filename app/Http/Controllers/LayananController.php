@@ -7,16 +7,14 @@ use Illuminate\Http\Request;
 
 class LayananController extends Controller
 {
-    // Halaman daftar layanan + form tambah
     public function index()
     {
         return view('layanan.index', [
             'daftar'  => Layanan::withCount('pesanan')->orderBy('id')->get(),
-            'dipilih' => null, // null = form dalam mode tambah
+            'dipilih' => null, 
         ]);
     }
 
-    // Halaman yang sama, tapi form terisi data yang mau diedit
     public function edit(Layanan $layanan)
     {
         return view('layanan.index', [
@@ -49,7 +47,6 @@ class LayananController extends Controller
             ->with('sukses', 'Layanan dihapus. Pesanan lama tetap menyimpan nama dan harganya.');
     }
 
-    // Aturan validasi dipakai bersama oleh store() dan update()
     private function validasi(Request $request)
     {
         return $request->validate([
