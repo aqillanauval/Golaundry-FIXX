@@ -36,12 +36,18 @@
             </label>
           @endforeach
         </div>
+        @error('layanan_id')
+          <small style="color:red">{{ $message }}</small>
+        @enderror
       </div>
 
       <div class="form-grup">
         <label for="catatan">Alamat jemput</label>
         <textarea id="catatan" name="catatan" class="input @error('catatan') salah @enderror" maxlength="500"
                   placeholder="contoh: Kos Melati kamar 7, Jl. Imam Bonjol No. 12" required>{{ old('catatan', $dipilih->catatan ?? '') }}</textarea>
+        @error('catatan')
+          <small style="color:red">{{ $message }}</small>
+        @enderror
       </div>
 
       <div class="form-grup">
@@ -60,6 +66,9 @@
             </option>
           @endforeach
         </select>
+        @error('promo_id')
+          <small style="color:red">{{ $message }}</small>
+        @enderror
       </div>
 
       <div class="estimasi">
