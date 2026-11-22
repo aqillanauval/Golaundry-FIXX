@@ -1,3 +1,11 @@
+-- =========================================================
+-- GOLaundry (Laravel) - struktur database MariaDB
+-- CADANGAN: cara utama tetap "php artisan migrate --seed".
+-- Pakai file ini hanya kalau migration bermasalah:
+-- phpMyAdmin > buat database golaundry_laravel > tab Import.
+-- Isinya sama dengan hasil semua file di database/migrations.
+-- =========================================================
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -13,9 +21,13 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `nama` varchar(100) NOT NULL,
   `role` varchar(10) NOT NULL DEFAULT 'customer',
+  `karyawan_id` bigint unsigned NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `users_username_unique` (`username`),
-  CONSTRAINT `chk_users_role` CHECK (`role` IN ('admin', 'customer'))
+  UNIQUE KEY `users_karyawan_id_unique` (`karyawan_id`),
+  CONSTRAINT `users_karyawan_id_foreign` FOREIGN KEY (`karyawan_id`) REFERENCES `karyawan` (`id`),
+  CONSTRAINT `chk_users_role` CHECK (`role` IN ('admin', 'customer')),
+  CONSTRAINT `chk_users_karyawan` CHECK ((`role` = 'admin' AND `karyawan_id` IS NOT NULL) OR (`role` = 'customer' AND `karyawan_id` IS NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `layanan` (
@@ -56,6 +68,7 @@ CREATE TABLE `pesanan` (
   `berat` decimal(6,1) NOT NULL DEFAULT 0.0,
   `catatan` varchar(500) NOT NULL DEFAULT '',
   `status` varchar(20) NOT NULL DEFAULT 'Menunggu Jemput',
+  `kurir_id` bigint unsigned NULL,
   `promo_id` bigint unsigned NULL,
   `nama_promo` varchar(100) NOT NULL DEFAULT '',
   `diskon` smallint NOT NULL DEFAULT 0,
@@ -66,6 +79,7 @@ CREATE TABLE `pesanan` (
   CONSTRAINT `pesanan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pesanan_layanan_id_foreign` FOREIGN KEY (`layanan_id`) REFERENCES `layanan` (`id`) ON DELETE SET NULL,
   CONSTRAINT `pesanan_promo_id_foreign` FOREIGN KEY (`promo_id`) REFERENCES `promo` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `pesanan_kurir_id_foreign` FOREIGN KEY (`kurir_id`) REFERENCES `karyawan` (`id`) ON DELETE SET NULL,
   CONSTRAINT `chk_pesanan_sumber` CHECK (`sumber` IN ('aplikasi', 'kios')),
   CONSTRAINT `chk_pesanan_harga` CHECK (`harga` >= 0),
   CONSTRAINT `chk_pesanan_berat` CHECK (`berat` >= 0),
@@ -86,17 +100,27 @@ CREATE TABLE `ulasan` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- Supaya "php artisan migrate" tahu tabel-tabel ini sudah dibuat
 INSERT INTO `migrations` (`migration`, `batch`) VALUES
   ('2026_11_20_000001_create_users_table', 1),
   ('2026_11_20_000002_create_layanan_table', 1),
   ('2026_11_20_000003_create_karyawan_table', 1),
   ('2026_11_20_000004_create_promo_table', 1),
   ('2026_11_20_000005_create_pesanan_table', 1),
-  ('2026_11_20_000006_create_ulasan_table', 1);
+  ('2026_11_20_000006_create_ulasan_table', 1),
+  ('2026_11_22_000007_add_kurir_id_to_pesanan_table', 1),
+  ('2026_11_22_000008_add_karyawan_id_to_users_table', 1);
 
-INSERT INTO `users` (`username`, `password`, `nama`, `role`) VALUES
-  ('admin@golaundry.com',     '$2y$10$RJecGaePKNPLTeIcFjmkCeUq2YZT6G3zVi8rxrmP2zkxzM2wkzgjm', 'Admin GoLaundry',     'admin'),
-  ('pelanggan@golaundry.com', '$2y$10$1vDYJu6UKrQcheuX0GHE8eks/bR0ZZqQjwtMsRjmOfOFOR/hnB1a.', 'Pelanggan GoLaundry', 'customer');
+-- Karyawan dimasukkan lebih dulu karena akun staff menunjuk ke karyawan (id 1)
+INSERT INTO `karyawan` (`nama`, `jabatan`, `no_hp`) VALUES
+  ('Admin GoLaundry', 'Admin Toko', '081234560000'),
+  ('Rudi Hartono', 'Kurir', '081234560001'), ('Sari Wulandari', 'Kasir', '081234560002'),
+  ('Joko Susilo', 'Operator Cuci', '081234560003'), ('Andi Wijaya', 'Kurir', '081234560005');
+
+-- Data awal (password: admin123 dan pelanggan123, sudah di-hash)
+INSERT INTO `users` (`username`, `password`, `nama`, `role`, `karyawan_id`) VALUES
+  ('admin@golaundry.com',     '$2y$10$RJecGaePKNPLTeIcFjmkCeUq2YZT6G3zVi8rxrmP2zkxzM2wkzgjm', 'Admin GoLaundry',     'admin',    1),
+  ('pelanggan@golaundry.com', '$2y$10$1vDYJu6UKrQcheuX0GHE8eks/bR0ZZqQjwtMsRjmOfOFOR/hnB1a.', 'Pelanggan GoLaundry', 'customer', NULL);
 
 INSERT INTO `layanan` (`nama`, `harga`, `satuan`) VALUES
   ('Cuci Kering', 7000, 'kg'), ('Cuci Setrika', 10000, 'kg'),

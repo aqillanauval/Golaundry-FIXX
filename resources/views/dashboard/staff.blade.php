@@ -153,9 +153,16 @@
       <div class="panel-kepala">
         <div>
           <h3>Perlu Dijemput <span class="tag">{{ $perluDijemput->count() }}</span></h3>
-          <p>Setelah ditimbang, isi beratnya di sini.</p>
+          <p>Setelah ditimbang, pilih kurir dan isi beratnya di sini.</p>
         </div>
       </div>
+
+      @if ($daftarKurir->isEmpty() && $perluDijemput->isNotEmpty())
+        <div class="alert alert-error">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Belum ada karyawan berjabatan Kurir. <a href="{{ route('karyawan.index') }}">Tambahkan dulu di menu Karyawan</a>.</span>
+        </div>
+      @endif
 
       <div class="item-list">
         @forelse ($perluDijemput as $p)
@@ -172,6 +179,13 @@
 
             <form method="POST" action="{{ route('transaksi.berat', $p) }}" class="jemput-form">
               @csrf
+              <label for="kurir-{{ $p->kode }}" class="sr-saja">Kurir</label>
+              <select id="kurir-{{ $p->kode }}" name="kurir_id" class="input input-kurir" required @if ($daftarKurir->isEmpty()) disabled @endif>
+                <option value="">Pilih kurir</option>
+                @foreach ($daftarKurir as $k)
+                  <option value="{{ $k->id }}">{{ $k->nama }}</option>
+                @endforeach
+              </select>
               <div class="input-satuan">
                 <label for="berat-{{ $p->kode }}" class="sr-saja">Berat</label>
                 <input type="number" id="berat-{{ $p->kode }}" name="berat" min="0.1" max="500" step="0.1" placeholder="0,0" required>

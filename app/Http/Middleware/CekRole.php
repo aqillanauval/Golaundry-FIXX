@@ -6,8 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// Middleware hak akses. Dipakai di routes/web.php, contoh: ->middleware('role:admin')
-// Pengganti fungsi harusLogin('admin') di proyek PHP Native.
 class CekRole
 {
     public function handle(Request $request, Closure $next, $role)

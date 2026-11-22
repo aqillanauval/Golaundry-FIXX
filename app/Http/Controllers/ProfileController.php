@@ -46,6 +46,10 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password_baru);
         }
         $user->save();
+        // Nama staff juga disimpan di data karyawan, jadi ikut diperbarui
+        if ($user->karyawan) {
+            $user->karyawan->update(['nama' => $user->nama]);
+        }
 
         return redirect()->route('profil')->with('sukses', 'Profil berhasil disimpan.');
     }

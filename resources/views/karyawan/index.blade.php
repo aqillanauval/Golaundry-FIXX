@@ -58,13 +58,19 @@
     </form>
     <div class="tabel-wrap">
       <table>
-        <thead><tr><th>Nama</th><th>Jabatan</th><th>No. HP</th><th>Aksi</th></tr></thead>
+        <thead><tr><th>Nama</th><th>Jabatan</th><th>No. HP</th><th>Penjemputan</th><th>Aksi</th></tr></thead>
         <tbody>
           @forelse ($daftar as $k)
             <tr>
               <td><strong>{{ $k->nama }}</strong></td>
-              <td><span class="tag">{{ $k->jabatan }}</span></td>
-              <td>{{ $k->no_hp }}</td>
+              <td>
+                <span class="tag">{{ $k->jabatan }}</span>
+                @if ($k->akun)
+                  <span class="tag aplikasi" title="{{ $k->akun->username }}"><i class="fa-solid fa-user-shield"></i> Akun staff</span>
+                @endif
+              </td>
+              <td>{{ $k->no_hp != '' ? $k->no_hp : '-' }}</td>
+              <td>{{ $k->isKurir() ? $k->pesanan_dijemput_count . ' pesanan' : '-' }}</td>
               <td>
                 <div class="aksi">
                   <a href="{{ route('karyawan.edit', $k) }}#form" class="btn btn-garis btn-kecil btn-ikon" title="Edit"><i class="fa-solid fa-pen"></i></a>
@@ -73,7 +79,7 @@
               </td>
             </tr>
           @empty
-            <tr><td colspan="4" class="kosong">{{ $cari ? 'Tidak ada karyawan yang cocok.' : 'Belum ada data karyawan.' }}</td></tr>
+            <tr><td colspan="5" class="kosong">{{ $cari ? 'Tidak ada karyawan yang cocok.' : 'Belum ada data karyawan.' }}</td></tr>
           @endforelse
         </tbody>
       </table>

@@ -1,3 +1,9 @@
+/* =========================================================
+   GOLaundry - style utama
+   Tema: soft pastel (putih, lavender, ungu pastel, biru muda)
+   ========================================================= */
+
+/* Font Plus Jakarta Sans disimpan lokal (public/vendor/fonts), jadi tetap jalan tanpa internet */
 @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 400; font-style: normal; font-display: swap; src: url('../vendor/fonts/plus-jakarta-sans-latin-400-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 500; font-style: normal; font-display: swap; src: url('../vendor/fonts/plus-jakarta-sans-latin-500-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 600; font-style: normal; font-display: swap; src: url('../vendor/fonts/plus-jakarta-sans-latin-600-normal.woff2') format('woff2'); }
@@ -5,7 +11,7 @@
 @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 800; font-style: normal; font-display: swap; src: url('../vendor/fonts/plus-jakarta-sans-latin-800-normal.woff2') format('woff2'); }
 
 :root {
-  --tinta: #17151f;        
+  --tinta: #17151f;        /* hitam lembut: menu aktif, tombol utama */
   --teks: #2b2838;
   --abu: #6e6a80;
   --abu-muda: #a19db3;
@@ -48,6 +54,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* garis lingkaran tipis di latar, seperti gambar referensi */
 body::before, body::after {
   content: '';
   position: fixed;
@@ -65,6 +72,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid rgba(124, 108, 240, .45); outline-offset: 2px; }
 .sr-saja { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
+/* ========== Kerangka aplikasi ========== */
+
 .shell {
   position: relative;
   z-index: 1;
@@ -80,6 +89,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: var(--radius-besar);
   box-shadow: 0 30px 80px rgba(70, 60, 150, .18);
 }
+
+/* ========== Sidebar ========== */
 
 .sidebar {
   width: var(--lebar-sidebar);
@@ -159,6 +170,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .tombol-logout:hover { background: #fdeef0; }
 
+/* ========== Area utama ========== */
+
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
 
 .topbar {
@@ -221,6 +234,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .avatar.besar { width: 72px; height: 72px; font-size: 28px; }
 .avatar.ungu { background: linear-gradient(135deg, #d9d3fd, #b3a8f7); color: #3d2fa8; }
 
+/* ========== Panel / kartu ========== */
+
 .panel {
   background: var(--latar-kartu);
   border-radius: var(--radius);
@@ -243,6 +258,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .kolom { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .lengket { position: sticky; top: 18px; }
 
+/* ========== Kartu statistik pastel ========== */
+
 .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .stat-grid.tiga { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
@@ -264,6 +281,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .stat.biru     { background: var(--biru-muda); }
 .stat.lavender { background: var(--lavender); }
 .stat.mint     { background: var(--mint); }
+
+/* tombol panah bulat yang "memotong" pojok kartu */
 .stat .panah {
   position: absolute; right: -6px; bottom: -6px;
   width: 44px; height: 44px;
@@ -279,6 +298,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .sapa-panel h1 { font-size: 28px; font-weight: 800; }
 .sapa-panel p { color: var(--abu); margin-top: 4px; }
 
+/* pil hitam + putih seperti "16 hours saved" di referensi */
 .pil-info { display: flex; flex-direction: column; gap: 0; min-width: 270px; }
 .pil {
   display: flex; align-items: center; gap: 12px;
@@ -292,6 +312,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .pil strong { font-size: 18px; display: block; line-height: 1.1; }
 .pil small { font-size: 11.5px; opacity: .7; }
 .pil .kanan { margin-left: auto; font-size: 12.5px; opacity: .85; }
+
+/* ========== Grafik batang kapsul ========== */
 
 .grafik-wrap { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; align-items: end; }
 .ringkas-grafik {
@@ -337,6 +359,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .pilih-periode a { white-space: nowrap; padding: 5px 13px; border-radius: 999px; color: var(--abu); font-size: 12.5px; font-weight: 600; }
 .pilih-periode a.aktif { background: var(--tinta); color: #fff; }
 
+/* ========== Tombol ========== */
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 18px;
@@ -359,6 +383,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .btn-penuh { width: 100%; }
 .aksi { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .inline { display: inline; }
+
+/* ========== Form ========== */
 
 .form-grup { margin-bottom: 14px; }
 .form-grup label, .label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: var(--tinta); }
@@ -388,6 +414,7 @@ textarea.input { resize: vertical; min-height: 84px; }
 .check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--abu); cursor: pointer; }
 .check input { accent-color: var(--ungu); width: 16px; height: 16px; }
 
+/* pilihan layanan berbentuk kartu (radio) */
 .pilih-kartu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .pilih-kartu label { margin: 0; cursor: pointer; }
 .pilih-kartu input { position: absolute; opacity: 0; }
@@ -402,6 +429,7 @@ textarea.input { resize: vertical; min-height: 84px; }
 .pilih-kartu input:checked + .isi { border-color: var(--ungu); background: var(--ungu-muda); box-shadow: 0 0 0 3px rgba(124, 108, 240, .15); }
 .pilih-kartu input:focus-visible + .isi { outline: 3px solid rgba(124, 108, 240, .45); }
 
+/* rating bintang (radio dibalik supaya hover bekerja ke kiri) */
 .bintang-input { display: inline-flex; flex-direction: row-reverse; gap: 4px; }
 .bintang-input input { position: absolute; opacity: 0; }
 .bintang-input label { font-size: 28px; color: #ddd9ea; cursor: pointer; margin: 0; transition: color .15s; }
@@ -427,6 +455,7 @@ textarea.input { resize: vertical; min-height: 84px; }
 .estimasi small { color: var(--abu); display: block; }
 .estimasi strong { font-size: 20px; color: var(--ungu-tua); }
 
+/* ========== Tabel ========== */
 
 .tabel-wrap { overflow-x: auto; margin: 0 -6px; }
 table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -449,6 +478,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 
 .kosong-besar { text-align: center; padding: 40px 20px; color: var(--abu); }
 .kosong-besar i { font-size: 34px; color: #c9c0fa; margin-bottom: 10px; display: block; }
+
+/* ========== Status ========== */
 
 .status {
   display: inline-flex; align-items: center; gap: 7px;
@@ -478,6 +509,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .tag.habis { background: #f1eff4; color: var(--abu); }
 .tag.tunggu { background: #fff3df; color: #a3640b; }
 
+/* ========== Notifikasi ========== */
+
 .alert {
   display: flex; align-items: flex-start; gap: 10px;
   padding: 13px 16px;
@@ -503,6 +536,7 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 
 @keyframes muncul { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 
+/* ========== Modal konfirmasi hapus ========== */
 
 .modal-latar {
   position: fixed; inset: 0; z-index: 90;
@@ -525,6 +559,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .modal h3 { font-size: 18px; margin-bottom: 6px; }
 .modal p { color: var(--abu); margin-bottom: 20px; }
 .modal .aksi { justify-content: center; }
+
+/* ========== Komponen dashboard ========== */
 
 .item-list { display: flex; flex-direction: column; gap: 10px; }
 .item {
@@ -591,8 +627,9 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .tracker-langkah strong { display: block; font-size: 12.5px; color: var(--tinta); }
 .tracker-langkah small { font-size: 11.5px; color: var(--abu); }
 
-.jemput-form { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
-.jemput-form .input-satuan { flex: 1; }
+.jemput-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.jemput-form .input-satuan { flex: 1; min-width: 110px; }
+.jemput-form .input-kurir { flex: 1 1 100%; }
 
 .cta {
   display: flex; align-items: center; gap: 16px;
@@ -635,6 +672,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .paginasi span.no.aktif { background: var(--tinta); color: #fff; border-color: var(--tinta); }
 .paginasi span.no.mati { color: var(--abu-muda); }
 
+/* ========== Halaman login & registrasi ========== */
+
 .auth-shell {
   position: relative; z-index: 1;
   display: grid; grid-template-columns: 1fr 1fr;
@@ -670,6 +709,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .akun-demo { margin-top: 18px; padding: 12px 14px; border-radius: 14px; background: var(--latar-lembut); font-size: 12.5px; color: var(--abu); }
 .akun-demo b { color: var(--tinta); }
 
+/* ========== Nota ========== */
+
 .nota-halaman { position: relative; z-index: 1; max-width: 480px; margin: 34px auto; padding: 0 16px; }
 .nota { background: #fff; border-radius: 22px; padding: 28px; box-shadow: 0 20px 50px rgba(70, 60, 150, .15); }
 .nota-kepala { text-align: center; padding-bottom: 16px; border-bottom: 2px dashed var(--garis); }
@@ -680,6 +721,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
 .nota-baris span:last-child { text-align: right; font-weight: 600; }
 .nota-total { display: flex; justify-content: space-between; padding: 14px 0 4px; margin-top: 8px; border-top: 2px dashed var(--garis); font-size: 18px; font-weight: 800; color: var(--tinta); }
 .nota-aksi { display: flex; gap: 8px; justify-content: center; margin-top: 18px; }
+
+/* ========== Responsif ========== */
 
 .overlay { display: none; }
 
@@ -733,6 +776,8 @@ td.kosong, .kosong { text-align: center; color: var(--abu); padding: 34px 12px; 
   .cta .btn { margin-left: 0; }
   .toast { left: 16px; right: 16px; }
 }
+
+/* ========== Cetak nota ========== */
 
 @media print {
   body { background: #fff; }

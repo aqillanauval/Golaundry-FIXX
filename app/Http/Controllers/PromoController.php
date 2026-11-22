@@ -54,7 +54,7 @@ class PromoController extends Controller
     public function destroy(Promo $promo)
     {
         $this->hapusFoto($promo->foto);
-        $promo->delete(); // pesanan yang pernah pakai promo ini tetap menyimpan nama & diskonnya
+        $promo->delete(); 
 
         return redirect()->route('promo.index')->with('sukses', 'Promo berhasil dihapus.');
     }
@@ -66,7 +66,7 @@ class PromoController extends Controller
             'deskripsi'      => 'required|string|max:500',
             'diskon'         => 'required|integer|between:1,100',
             'berlaku_sampai' => 'required|date',
-            'foto'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // maks 2 MB
+            'foto'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048', 
         ]);
     }
 

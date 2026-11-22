@@ -5,8 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-// Menyuruh browser TIDAK menyimpan halaman di cache.
-// Tujuannya: setelah logout, tombol Back tidak bisa menampilkan halaman lama.
 class TanpaCache
 {
     public function handle(Request $request, Closure $next)

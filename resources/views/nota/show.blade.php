@@ -23,6 +23,9 @@
       <div class="nota-baris"><span>Pelanggan</span><span>{{ $pesanan->namaPelanggan() }}</span></div>
       <div class="nota-baris"><span>Asal pesanan</span><span>{{ $pesanan->asal() }}</span></div>
       <div class="nota-baris"><span>Status</span><span>@include('partials.status', ['status' => $pesanan->status])</span></div>
+      @if ($pesanan->kurir)
+        <div class="nota-baris"><span>Dijemput oleh</span><span>{{ $pesanan->kurir->nama }}</span></div>
+      @endif
       @if ($pesanan->catatan != '')
         <div class="nota-baris"><span>{{ $pesanan->sumber == 'aplikasi' ? 'Alamat jemput' : 'Catatan' }}</span><span>{{ $pesanan->catatan }}</span></div>
       @endif

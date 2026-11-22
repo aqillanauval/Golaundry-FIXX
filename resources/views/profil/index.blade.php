@@ -22,6 +22,9 @@
       <div><dt>Nama</dt><dd>{{ $user->nama }}</dd></div>
       <div><dt>Email / No. HP</dt><dd>{{ $user->username }}</dd></div>
       <div><dt>Role</dt><dd>{{ $user->namaRole() }}</dd></div>
+      @if ($user->isAdmin() && $user->karyawan)
+        <div><dt>Jabatan</dt><dd>{{ $user->karyawan->jabatan }}</dd></div>
+      @endif
       <div><dt>Terdaftar sejak</dt><dd>{{ tglPendek($user->created_at) }}</dd></div>
       @if (!$user->isAdmin())
         <div><dt>Jumlah pesanan</dt><dd>{{ $jumlahPesanan }}</dd></div>

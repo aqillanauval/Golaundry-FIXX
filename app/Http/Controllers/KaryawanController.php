@@ -38,19 +38,31 @@ class KaryawanController extends Controller
         $data = $this->validasi($request);
         $karyawan->update($data);
 
+        // Kalau karyawan ini punya akun staff, nama di akunnya ikut disamakan
+        if ($karyawan->akun) {
+            $karyawan->akun->update(['nama' => $karyawan->nama]);
+        }
+
         return redirect()->route('karyawan.index')->with('sukses', 'Data karyawan berhasil diubah.');
     }
 
     public function destroy(Karyawan $karyawan)
     {
+        // Karyawan yang punya akun staff tidak boleh dihapus (foreign key RESTRICT)
+        if ($karyawan->akun) {
+            return redirect()->route('karyawan.index')
+                ->with('error', $karyawan->nama . ' masih punya akun staff, jadi datanya tidak bisa dihapus.');
+        }
+
         $karyawan->delete();
 
         return redirect()->route('karyawan.index')->with('sukses', 'Karyawan berhasil dihapus.');
     }
 
+    // Pencarian pakai where + LIKE, nilainya tetap dikirim terpisah (prepared statement)
     private function ambilDaftar(Request $request)
     {
-        $query = Karyawan::orderBy('nama');
+        $query = Karyawan::with('akun')->withCount('pesananDijemput')->orderBy('nama');
         if ($request->filled('cari')) {
             $query->where('nama', 'like', '%' . $request->cari . '%')
                   ->orWhere('jabatan', 'like', '%' . $request->cari . '%');

@@ -9,14 +9,16 @@ class Pesanan extends Model
     protected $table = 'pesanan';
     public $timestamps = false;
 
+    // Urutan status laundry GOLaundry
     const DAFTAR_STATUS = ['Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'];
 
+    // Status yang boleh dipilih staff setelah cucian ditimbang
     const STATUS_PROSES = ['Diterima', 'Dicuci', 'Selesai', 'Diambil'];
 
     protected $fillable = [
         'kode', 'user_id', 'nama_pelanggan', 'sumber',
         'layanan_id', 'nama_layanan', 'harga', 'satuan',
-        'berat', 'catatan', 'status',
+        'berat', 'catatan', 'status', 'kurir_id',
         'promo_id', 'nama_promo', 'diskon', 'tanggal',
     ];
 
@@ -27,10 +29,13 @@ class Pesanan extends Model
         'diskon'  => 'integer',
     ];
 
+    // Di URL, pesanan dicari pakai kode (contoh: /nota/ORD6ab7da28cce8f), bukan id
     public function getRouteKeyName()
     {
         return 'kode';
     }
+
+    // ---------- Relasi ----------
 
     public function user()
     {
@@ -52,11 +57,20 @@ class Pesanan extends Model
         return $this->hasOne(Ulasan::class, 'pesanan_id');
     }
 
-    public static function buatKode()
+    // Kurir (karyawan) yang menjemput cucian. Kosong untuk pesanan kios.
+    public function kurir()
     {
-        return uniqid('ORD'); 
+        return $this->belongsTo(Karyawan::class, 'kurir_id');
     }
 
+    // ---------- Fungsi bantu ----------
+
+    public static function buatKode()
+    {
+        return uniqid('ORD'); // contoh: ORD6ab7da28cce8f
+    }
+
+    // Nama pelanggan: ambil dari akun kalau masih ada, kalau tidak pakai nama yang disimpan
     public function namaPelanggan()
     {
         if ($this->user) {
@@ -105,6 +119,7 @@ class Pesanan extends Model
         return $this->sumber == 'aplikasi' ? 'Aplikasi' : 'Kios';
     }
 
+    // Posisi status di DAFTAR_STATUS (0 - 4), dipakai untuk tracker
     public function langkahStatus()
     {
         return array_search($this->status, self::DAFTAR_STATUS);
