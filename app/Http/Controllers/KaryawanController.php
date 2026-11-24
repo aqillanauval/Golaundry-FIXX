@@ -59,7 +59,6 @@ class KaryawanController extends Controller
         return redirect()->route('karyawan.index')->with('sukses', 'Karyawan berhasil dihapus.');
     }
 
-    // Pencarian pakai where + LIKE, nilainya tetap dikirim terpisah (prepared statement)
     private function ambilDaftar(Request $request)
     {
         $query = Karyawan::with('akun')->withCount('pesananDijemput')->orderBy('nama');

@@ -42,7 +42,7 @@ class PromoController extends Controller
         $data = $this->validasi($request);
 
         if ($request->hasFile('foto')) {
-            $this->hapusFoto($promo->foto);           // foto lama dibuang
+            $this->hapusFoto($promo->foto);           
             $data['foto'] = $this->simpanFoto($request);
         }
 

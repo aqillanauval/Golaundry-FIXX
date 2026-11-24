@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    // Lihat data profil
+
     public function index()
     {
         $user = Auth::user();
@@ -19,7 +19,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Ubah data profil
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -27,10 +26,8 @@ class ProfileController extends Controller
 
         $request->validate([
             'nama'          => 'required|string|max:100',
-            // unique tapi abaikan baris milik user ini sendiri
             'username'      => 'required|string|max:100|unique:users,username,' . $user->id,
             'password_baru' => 'nullable|string|min:6|confirmed',
-            // password lama wajib kalau mau ganti password
             'password_lama' => 'nullable|required_with:password_baru|current_password',
         ]);
 
@@ -54,7 +51,6 @@ class ProfileController extends Controller
         return redirect()->route('profil')->with('sukses', 'Profil berhasil disimpan.');
     }
 
-    // Hapus akun sendiri (khusus pelanggan)
     public function destroy(Request $request)
     {
         $user = Auth::user();
@@ -63,7 +59,6 @@ class ProfileController extends Controller
             return back()->with('error', 'Akun staff tidak bisa dihapus dari halaman profil.');
         }
 
-        // Minta password supaya akun tidak terhapus tanpa sengaja
         $request->validate(
             ['konfirmasi_password' => 'required|current_password'],
             ['konfirmasi_password.current_password' => 'Password salah, akun tidak jadi dihapus.']

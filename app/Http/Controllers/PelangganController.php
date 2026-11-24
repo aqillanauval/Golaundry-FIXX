@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-
 class PelangganController extends Controller
 {
     public function index(Request $request)
@@ -61,7 +60,7 @@ class PelangganController extends Controller
         $request->validate([
             'nama'     => 'required|string|max:100',
             'username' => 'required|string|max:100|unique:users,username,' . $pelanggan->id,
-            'password' => 'nullable|string|min:6', // kosongkan kalau tidak diganti
+            'password' => 'nullable|string|min:6', 
         ]);
 
         if (!usernameValid($request->username)) {

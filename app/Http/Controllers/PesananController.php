@@ -8,7 +8,6 @@ use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class PesananController extends Controller
 {
     public function index(Request $request)
@@ -55,10 +54,10 @@ class PesananController extends Controller
             'nama_pelanggan' => $user->nama,
             'sumber'         => 'aplikasi',
             'layanan_id'     => $layanan->id,
-            'nama_layanan'   => $layanan->nama,   // disalin, supaya nota tidak berubah
-            'harga'          => $layanan->harga,  // kalau harga layanan diganti nanti
+            'nama_layanan'   => $layanan->nama,   
+            'harga'          => $layanan->harga,  
             'satuan'         => $layanan->satuan,
-            'berat'          => 0,                // diisi staff setelah ditimbang
+            'berat'          => 0,                
             'catatan'        => trim($request->catatan),
             'status'         => 'Menunggu Jemput',
             'promo_id'       => $promo ? $promo->id : null,
