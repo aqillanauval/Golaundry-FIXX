@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +44,7 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password_baru);
         }
         $user->save();
+        LogAktivitas::catat('Ubah profil', $request->filled('password_baru') ? 'Termasuk ganti password' : '');
         // Nama staff juga disimpan di data karyawan, jadi ikut diperbarui
         if ($user->karyawan) {
             $user->karyawan->update(['nama' => $user->nama]);
@@ -63,6 +65,7 @@ class ProfileController extends Controller
             ['konfirmasi_password' => 'required|current_password'],
             ['konfirmasi_password.current_password' => 'Password salah, akun tidak jadi dihapus.']
         );
+        LogAktivitas::catat('Hapus akun sendiri', $user->nama);
         $user->hapusAkunPelanggan();
 
         Auth::logout();

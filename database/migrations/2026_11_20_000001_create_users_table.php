@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Catatan: CHECK constraint lewat ALTER TABLE hanya didukung MySQL/MariaDB,
+    // jadi dilewati saat memakai SQLite (dipakai oleh php artisan test).
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -18,7 +20,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
         });
 
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_role CHECK (role IN ('admin', 'customer'))");
+        DB::getDriverName() === 'sqlite' || DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_role CHECK (role IN ('admin', 'customer'))");
     }
 
     public function down(): void

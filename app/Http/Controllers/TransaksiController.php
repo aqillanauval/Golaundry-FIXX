@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Karyawan;
 use App\Models\Layanan;
 use App\Models\Pesanan;
@@ -41,7 +42,7 @@ class TransaksiController extends Controller
         }
 
         $layanan = Layanan::find($request->layanan_id);
-        Pesanan::create([
+        $pesanan = Pesanan::create([
             'kode'           => Pesanan::buatKode(),
             'user_id'        => null, 
             'nama_pelanggan' => trim($request->nama_pelanggan),
@@ -58,6 +59,8 @@ class TransaksiController extends Controller
             'diskon'         => $promo ? $promo->diskon : 0,
             'tanggal'        => now(),
         ]);
+
+        LogAktivitas::catat('Catat transaksi kios', $pesanan->kode . ' - ' . $pesanan->nama_pelanggan . ' - ' . rupiah($pesanan->total()));
 
         return redirect()->route('transaksi.index')->with('sukses', 'Transaksi pelanggan kios berhasil dicatat.');
     }
@@ -80,13 +83,15 @@ class TransaksiController extends Controller
         $pesanan->status = $request->status;
         $pesanan->catatan = trim((string) $request->catatan);
         $pesanan->save();
+        LogAktivitas::catat('Ubah transaksi', $pesanan->kode . ' - ' . $pesanan->status . ' - ' . rupiah($pesanan->total()));
 
         return redirect()->route('transaksi.index')->with('sukses', 'Transaksi ' . $pesanan->kode . ' berhasil diubah.');
     }
 
     public function destroy(Pesanan $pesanan)
     {
-        $pesanan->delete(); 
+        $pesanan->delete();
+        LogAktivitas::catat('Hapus transaksi', $pesanan->kode . ' - ' . $pesanan->namaPelanggan());
 
         return redirect()->route('transaksi.index')->with('sukses', 'Transaksi berhasil dihapus.');
     }
@@ -117,6 +122,7 @@ class TransaksiController extends Controller
         $pesanan->save();
 
         $kurir = Karyawan::find($pesanan->kurir_id);
+        LogAktivitas::catat('Isi berat', $pesanan->kode . ' - ' . formatBerat($pesanan->berat) . ' ' . $pesanan->satuan . ' - kurir ' . $kurir->nama);
 
         return back()->with('sukses', 'Berat ' . formatBerat($pesanan->berat) . ' ' . $pesanan->satuan
             . ' untuk ' . $pesanan->namaPelanggan() . ' tersimpan (dijemput ' . $kurir->nama . '). Total bayar ' . rupiah($pesanan->total()) . '.');
@@ -133,6 +139,7 @@ class TransaksiController extends Controller
 
         $pesanan->status = $request->status;
         $pesanan->save();
+        LogAktivitas::catat('Ubah status', $pesanan->kode . ' jadi ' . $pesanan->status);
 
         return response()->json([
             'sukses' => true,
@@ -140,7 +147,34 @@ class TransaksiController extends Controller
         ]);
     }
 
-    private function dataHalaman(Request $request, $dipilih)
+    // Unduh daftar transaksi (sesuai filter yang sedang dipakai) sebagai file CSV untuk Excel
+    public function export(Request $request)
+    {
+        $daftar = $this->queryDaftar($request)->with('kurir')->get();
+        $namaFile = 'transaksi-golaundry-' . date('Y-m-d') . '.csv';
+
+        LogAktivitas::catat('Export transaksi', $daftar->count() . ' baris');
+
+        return response()->streamDownload(function () use ($daftar) {
+            $file = fopen('php://output', 'w');
+            fwrite($file, "\xEF\xBB\xBF"); // BOM supaya huruf terbaca benar di Excel
+            fputcsv($file, ['No. Nota', 'Tanggal', 'Pelanggan', 'Asal', 'Layanan', 'Harga', 'Satuan',
+                'Berat/Jumlah', 'Subtotal', 'Promo', 'Diskon (%)', 'Potongan', 'Total', 'Status', 'Kurir'], ';');
+
+            foreach ($daftar as $p) {
+                fputcsv($file, [
+                    $p->kode, $p->tanggal->format('Y-m-d H:i'), $p->namaPelanggan(), $p->asal(),
+                    $p->nama_layanan, $p->harga, $p->satuan, $p->berat, $p->subtotal(),
+                    $p->nama_promo, $p->diskon, $p->potongan(), $p->total(), $p->status,
+                    $p->kurir->nama ?? '',
+                ], ';');
+            }
+            fclose($file);
+        }, $namaFile, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    // Query daftar transaksi + filter pencarian, dipakai halaman daftar dan export
+    private function queryDaftar(Request $request)
     {
         $query = Pesanan::with('user', 'ulasan')->orderBy('tanggal', 'desc');
 
@@ -155,6 +189,13 @@ class TransaksiController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+
+        return $query;
+    }
+
+    private function dataHalaman(Request $request, $dipilih)
+    {
+        $query = $this->queryDaftar($request);
 
         $totalPendapatan = 0;
         foreach (Pesanan::where('berat', '>', 0)->get() as $p) {

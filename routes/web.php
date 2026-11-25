@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PesananController;
@@ -20,9 +21,10 @@ Route::get('/', function () {
 
 Route::middleware(['guest', 'tanpa.cache'])->group(function () {
     Route::get('/login', [AuthController::class, 'formLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
+    // maksimal 5 percobaan login per menit untuk mencegah tebak-tebakan password (brute force)
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.proses');
     Route::get('/registrasi', [AuthController::class, 'formRegister'])->name('register');
-    Route::post('/registrasi', [AuthController::class, 'register'])->name('register.proses');
+    Route::post('/registrasi', [AuthController::class, 'register'])->middleware('throttle:10,1')->name('register.proses');
 });
 
 Route::middleware(['auth', 'tanpa.cache'])->group(function () {
@@ -62,6 +64,7 @@ Route::middleware(['auth', 'tanpa.cache'])->group(function () {
         Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
 
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::get('/transaksi/export', [TransaksiController::class, 'export'])->name('transaksi.export');
         Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
         Route::get('/transaksi/{pesanan}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
         Route::put('/transaksi/{pesanan}', [TransaksiController::class, 'update'])->name('transaksi.update');
@@ -71,6 +74,9 @@ Route::middleware(['auth', 'tanpa.cache'])->group(function () {
 
         Route::get('/ulasan', [UlasanController::class, 'index'])->name('ulasan.index');
         Route::delete('/ulasan/{ulasan}', [UlasanController::class, 'destroy'])->name('ulasan.destroy');
+
+        Route::get('/log', [LogController::class, 'index'])->name('log.index');
+        Route::delete('/log', [LogController::class, 'destroy'])->name('log.destroy');
     });
 
     Route::middleware('role:customer')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +49,7 @@ class PelangganController extends Controller
             'password' => Hash::make($request->password),
             'role'     => 'customer',
         ]);
+        LogAktivitas::catat('Tambah pelanggan', trim($request->nama) . ' (' . $request->username . ')');
 
         return redirect()->route('pelanggan.index')->with('sukses', 'Pelanggan baru berhasil ditambahkan.');
     }
@@ -74,6 +76,7 @@ class PelangganController extends Controller
             $pelanggan->password = Hash::make($request->password);
         }
         $pelanggan->save();
+        LogAktivitas::catat('Ubah pelanggan', $pelanggan->nama . ($request->filled('password') ? ' + reset password' : ''));
 
         return redirect()->route('pelanggan.index')->with('sukses', 'Data pelanggan berhasil diubah.');
     }
@@ -82,6 +85,7 @@ class PelangganController extends Controller
     {
         $this->pastikanPelanggan($pelanggan);
         $pelanggan->hapusAkunPelanggan();
+        LogAktivitas::catat('Hapus pelanggan', $pelanggan->nama . ' (' . $pelanggan->username . ')');
 
         return redirect()->route('pelanggan.index')
             ->with('sukses', 'Akun pelanggan dihapus. Riwayat transaksinya tetap disimpan.');

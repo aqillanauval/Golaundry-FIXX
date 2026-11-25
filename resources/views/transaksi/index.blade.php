@@ -112,6 +112,9 @@
       </select>
       <button type="submit" class="btn btn-garis btn-kecil"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
       @if ($cari || $statusFilter)<a href="{{ route('transaksi.index') }}" class="btn btn-kecil btn-garis">Reset</a>@endif
+      <a href="{{ route('transaksi.export', request()->only('cari', 'status')) }}" class="btn btn-kecil btn-garis" title="Unduh daftar transaksi sesuai filter (bisa dibuka di Excel)">
+        <i class="fa-solid fa-file-csv"></i> Export CSV
+      </a>
     </form>
 
     <div class="tabel-wrap">

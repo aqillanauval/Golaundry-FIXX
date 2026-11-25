@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Catatan: CHECK constraint lewat ALTER TABLE hanya didukung MySQL/MariaDB,
+    // jadi dilewati saat memakai SQLite (dipakai oleh php artisan test).
     public function up(): void
     {
         Schema::create('ulasan', function (Blueprint $table) {
@@ -17,7 +19,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
         });
 
-        DB::statement('ALTER TABLE ulasan ADD CONSTRAINT chk_ulasan_rating CHECK (rating BETWEEN 1 AND 5)');
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE ulasan ADD CONSTRAINT chk_ulasan_rating CHECK (rating BETWEEN 1 AND 5)');
     }
 
     public function down(): void

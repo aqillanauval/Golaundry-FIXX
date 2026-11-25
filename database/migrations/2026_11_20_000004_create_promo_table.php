@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Catatan: CHECK constraint lewat ALTER TABLE hanya didukung MySQL/MariaDB,
+    // jadi dilewati saat memakai SQLite (dipakai oleh php artisan test).
     public function up(): void
     {
         Schema::create('promo', function (Blueprint $table) {
@@ -18,7 +20,7 @@ return new class extends Migration
             $table->string('foto', 255)->default(''); 
         });
 
-        DB::statement('ALTER TABLE promo ADD CONSTRAINT chk_promo_diskon CHECK (diskon BETWEEN 1 AND 100)');
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE promo ADD CONSTRAINT chk_promo_diskon CHECK (diskon BETWEEN 1 AND 100)');
     }
 
     public function down(): void

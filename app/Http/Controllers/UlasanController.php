@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
@@ -32,6 +33,7 @@ class UlasanController extends Controller
     public function destroy(Ulasan $ulasan)
     {
         $ulasan->delete();
+        LogAktivitas::catat('Hapus ulasan pelanggan', ($ulasan->pesanan->kode ?? '-') . ' - ' . $ulasan->rating . ' bintang');
 
         return redirect()->route('ulasan.index')->with('sukses', 'Ulasan berhasil dihapus.');
     }

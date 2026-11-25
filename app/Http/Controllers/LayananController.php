@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Layanan;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,8 @@ class LayananController extends Controller
     public function store(Request $request)
     {
         $data = $this->validasi($request);
-        Layanan::create($data);
+        $layanan = Layanan::create($data);
+        LogAktivitas::catat('Tambah layanan', $layanan->nama . ' (' . rupiah($layanan->harga) . '/' . $layanan->satuan . ')');
 
         return redirect()->route('layanan.index')->with('sukses', 'Layanan baru berhasil ditambahkan.');
     }
@@ -36,6 +38,7 @@ class LayananController extends Controller
     {
         $data = $this->validasi($request);
         $layanan->update($data);
+        LogAktivitas::catat('Ubah layanan', $layanan->nama . ' (' . rupiah($layanan->harga) . '/' . $layanan->satuan . ')');
 
         return redirect()->route('layanan.index')->with('sukses', 'Layanan berhasil diubah.');
     }
@@ -43,6 +46,7 @@ class LayananController extends Controller
     public function destroy(Layanan $layanan)
     {
         $layanan->delete();
+        LogAktivitas::catat('Hapus layanan', $layanan->nama);
 
         return redirect()->route('layanan.index')
             ->with('sukses', 'Layanan dihapus. Pesanan lama tetap menyimpan nama dan harganya.');

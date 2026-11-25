@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Pesanan;
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
@@ -59,6 +60,8 @@ class RiwayatController extends Controller
             ['rating' => $request->rating, 'komentar' => trim($request->komentar)]
         );
 
+        LogAktivitas::catat($sudahAda ? 'Ubah ulasan' : 'Beri ulasan', $pesanan->kode . ' - ' . $request->rating . ' bintang');
+
         return redirect()->route('riwayat.index')
             ->with('sukses', $sudahAda ? 'Ulasan berhasil diubah.' : 'Terima kasih! Ulasanmu sudah disimpan.');
     }
@@ -69,6 +72,7 @@ class RiwayatController extends Controller
 
         if ($pesanan->ulasan) {
             $pesanan->ulasan->delete();
+            LogAktivitas::catat('Hapus ulasan', $pesanan->kode);
         }
 
         return redirect()->route('riwayat.index')->with('sukses', 'Ulasan berhasil dihapus.');

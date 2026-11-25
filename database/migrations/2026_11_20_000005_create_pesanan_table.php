@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Catatan: CHECK constraint lewat ALTER TABLE hanya didukung MySQL/MariaDB,
+    // jadi dilewati saat memakai SQLite (dipakai oleh php artisan test).
     public function up(): void
     {
         Schema::create('pesanan', function (Blueprint $table) {
@@ -36,11 +38,11 @@ return new class extends Migration
             $table->index('tanggal');
         });
 
-        DB::statement("ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_sumber CHECK (sumber IN ('aplikasi', 'kios'))");
-        DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_harga CHECK (harga >= 0)');
-        DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_berat CHECK (berat >= 0)');
-        DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_diskon CHECK (diskon BETWEEN 0 AND 100)');
-        DB::statement("ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_status CHECK (status IN ('Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'))");
+        DB::getDriverName() === 'sqlite' || DB::statement("ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_sumber CHECK (sumber IN ('aplikasi', 'kios'))");
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_harga CHECK (harga >= 0)');
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_berat CHECK (berat >= 0)');
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_diskon CHECK (diskon BETWEEN 0 AND 100)');
+        DB::getDriverName() === 'sqlite' || DB::statement("ALTER TABLE pesanan ADD CONSTRAINT chk_pesanan_status CHECK (status IN ('Menunggu Jemput', 'Diterima', 'Dicuci', 'Selesai', 'Diambil'))");
     }
 
     public function down(): void

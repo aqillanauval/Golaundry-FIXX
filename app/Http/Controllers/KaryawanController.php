@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,8 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $data = $this->validasi($request);
-        Karyawan::create($data);
+        $karyawan = Karyawan::create($data);
+        LogAktivitas::catat('Tambah karyawan', $karyawan->nama . ' - ' . $karyawan->jabatan);
 
         return redirect()->route('karyawan.index')->with('sukses', 'Karyawan baru berhasil ditambahkan.');
     }
@@ -37,6 +39,7 @@ class KaryawanController extends Controller
     {
         $data = $this->validasi($request);
         $karyawan->update($data);
+        LogAktivitas::catat('Ubah karyawan', $karyawan->nama . ' - ' . $karyawan->jabatan);
 
         // Kalau karyawan ini punya akun staff, nama di akunnya ikut disamakan
         if ($karyawan->akun) {
@@ -55,6 +58,7 @@ class KaryawanController extends Controller
         }
 
         $karyawan->delete();
+        LogAktivitas::catat('Hapus karyawan', $karyawan->nama);
 
         return redirect()->route('karyawan.index')->with('sukses', 'Karyawan berhasil dihapus.');
     }

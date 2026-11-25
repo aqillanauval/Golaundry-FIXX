@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\Layanan;
 use App\Models\Pesanan;
 use App\Models\Promo;
@@ -48,7 +49,7 @@ class PesananController extends Controller
         }
 
         $user = Auth::user();
-        Pesanan::create([
+        $pesanan = Pesanan::create([
             'kode'           => Pesanan::buatKode(),
             'user_id'        => $user->id,
             'nama_pelanggan' => $user->nama,
@@ -65,6 +66,8 @@ class PesananController extends Controller
             'diskon'         => $promo ? $promo->diskon : 0,
             'tanggal'        => now(),
         ]);
+
+        LogAktivitas::catat('Buat pesanan', $pesanan->kode . ' - ' . $pesanan->nama_layanan);
 
         return redirect()->route('dashboard')
             ->with('sukses', 'Pesanan masuk! Kurir akan menjemput dan menimbang cucianmu.');
@@ -97,6 +100,7 @@ class PesananController extends Controller
         }
 
         $pesanan->save();
+        LogAktivitas::catat('Ubah pesanan', $pesanan->kode . ' - ' . $pesanan->nama_layanan);
 
         return redirect()->route('pesanan.index')->with('sukses', 'Pesanan berhasil diubah.');
     }
@@ -105,6 +109,7 @@ class PesananController extends Controller
     {
         $this->pastikanBisaDiubah($pesanan);
         $pesanan->delete();
+        LogAktivitas::catat('Batalkan pesanan', $pesanan->kode);
 
         return redirect()->route('pesanan.index')->with('sukses', 'Pesanan berhasil dibatalkan.');
     }

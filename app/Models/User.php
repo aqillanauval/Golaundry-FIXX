@@ -63,7 +63,8 @@ class User extends Authenticatable
                     ['karyawan.index', 'Karyawan', 'fa-id-badge', 'karyawan.*'],
                 ],
                 'Lainnya' => [
-                                        ['profil', 'Profil Saya', 'fa-user', 'profil*'],
+                    ['log.index', 'Log Aktivitas', 'fa-clipboard-list', 'log.*'],
+                    ['profil', 'Profil Saya', 'fa-user', 'profil*'],
                 ],
             ];
         }

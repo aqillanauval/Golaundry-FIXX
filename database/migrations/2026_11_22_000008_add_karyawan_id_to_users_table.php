@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Schema;
 // sedangkan akun pelanggan tidak terhubung ke karyawan.
 return new class extends Migration
 {
+    // Catatan: CHECK constraint lewat ALTER TABLE hanya didukung MySQL/MariaDB,
+    // jadi dilewati saat memakai SQLite (dipakai oleh php artisan test).
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -34,14 +36,14 @@ return new class extends Migration
         }
 
         // Staff wajib terhubung ke karyawan, pelanggan tidak boleh
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_karyawan CHECK (
+        DB::getDriverName() === 'sqlite' || DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_karyawan CHECK (
             (role = 'admin' AND karyawan_id IS NOT NULL) OR (role = 'customer' AND karyawan_id IS NULL)
         )");
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE users DROP CONSTRAINT chk_users_karyawan');
+        DB::getDriverName() === 'sqlite' || DB::statement('ALTER TABLE users DROP CONSTRAINT chk_users_karyawan');
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropConstrainedForeignId('karyawan_id');

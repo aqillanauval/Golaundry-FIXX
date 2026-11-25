@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LogAktivitas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class AuthController extends Controller
         if (Auth::attempt(['username' => $username, 'password' => $request->password])) {
             
             $request->session()->regenerate();
+            LogAktivitas::catat('Login', Auth::user()->namaRole());
 
             if ($request->has('ingat')) {
                 Cookie::queue('ingat_user', $username, 60 * 24 * 30); // 30 hari (dalam menit)
@@ -40,6 +42,8 @@ class AuthController extends Controller
             return redirect()->route('dashboard')
                 ->with('sukses', 'Login berhasil. Selamat datang, ' . Auth::user()->nama . '!');
         }
+
+        LogAktivitas::catat('Login gagal', 'Password atau username salah', $username);
 
         return back()
             ->withErrors(['username' => 'Email/No. HP atau password salah.'])
@@ -68,12 +72,14 @@ class AuthController extends Controller
                 ->withInput($request->except('password', 'password_confirmation'));
         }
 
-        User::create([
+        $user = User::create([
             'nama'     => trim($request->nama),
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role'     => 'customer', // registrasi publik selalu jadi pelanggan
         ]);
+
+        LogAktivitas::catat('Registrasi akun', $user->nama, $user->username);
 
         return redirect()->route('login')
             ->with('sukses', 'Akun berhasil dibuat! Silakan login.');
@@ -82,7 +88,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-
+        LogAktivitas::catat('Logout');
         Auth::logout();
         $request->session()->invalidate();      
         $request->session()->regenerateToken(); 
